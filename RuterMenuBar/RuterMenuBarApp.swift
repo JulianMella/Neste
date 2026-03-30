@@ -13,14 +13,17 @@ struct RuterMenuBarApp: App {
     @State private var test: String = ""
     
     var body: some Scene {
-        MenuBarExtra("Test", systemImage: "number") {
+        MenuBarExtra("Test", systemImage: "tram.fill") {
             VStack {
-                TextField(
-                    "Testing",
-                    text: $test
-                )
+                Button(action: FetchOneHardcodedStop){
+                    Text("Fetch stop")
+                }
             }
         }
         .menuBarExtraStyle(.window)
     }
+}
+
+func FetchOneHardcodedStop() {
+    print("To be implemented")
 }
