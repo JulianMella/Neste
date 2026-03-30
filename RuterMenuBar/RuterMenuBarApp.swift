@@ -10,9 +10,17 @@ import SwiftData
 
 @main
 struct RuterMenuBarApp: App {
+    @State private var test: String = ""
+    
     var body: some Scene {
         MenuBarExtra("Test", systemImage: "number") {
-            Text("Hello")
+            VStack {
+                TextField(
+                    "Testing",
+                    text: $test
+                )
+            }
         }
+        .menuBarExtraStyle(.window)
     }
 }
