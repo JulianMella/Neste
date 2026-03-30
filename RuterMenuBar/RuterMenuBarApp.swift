@@ -11,8 +11,8 @@ import SwiftData
 @main
 struct RuterMenuBarApp: App {
     var body: some Scene {
-        WindowGroup {
-            ContentView()
+        MenuBarExtra("Test", systemImage: "number") {
+            Text("Hello")
         }
     }
 }
