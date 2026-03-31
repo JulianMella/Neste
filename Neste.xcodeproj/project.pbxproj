@@ -7,10 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F0058E3D2F7B64F200F8E395 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F0058E3C2F7B64F200F8E395 /* README.md */; };
 		F0A774912F7ABB9A00B5FE2B /* Project Spec.md in Resources */ = {isa = PBXBuildFile; fileRef = F0A7748F2F7ABB9500B5FE2B /* Project Spec.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F0058E3C2F7B64F200F8E395 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		F0A774782F7AAF2300B5FE2B /* Neste.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Neste.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0A7748F2F7ABB9500B5FE2B /* Project Spec.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Project Spec.md"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -40,6 +42,7 @@
 				F0A7747A2F7AAF2300B5FE2B /* Neste */,
 				F0A774792F7AAF2300B5FE2B /* Products */,
 				F0A7748F2F7ABB9500B5FE2B /* Project Spec.md */,
+				F0058E3C2F7B64F200F8E395 /* README.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -115,6 +118,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F0058E3D2F7B64F200F8E395 /* README.md in Resources */,
 				F0A774912F7ABB9A00B5FE2B /* Project Spec.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
