@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 @main
-struct RuterMenuBarApp: App {
+struct NesteApp: App {
     @State private var test: String = ""
     
     var body: some Scene {
