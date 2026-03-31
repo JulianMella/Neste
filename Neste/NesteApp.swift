@@ -10,8 +10,6 @@ import SwiftData
 
 @main
 struct NesteApp: App {
-    @State private var test: String = ""
-    
     var body: some Scene {
         MenuBarExtra("Test", systemImage: "tram.fill") {
             VStack {
@@ -23,6 +21,7 @@ struct NesteApp: App {
                     Text("Fetch stop")
                 }
             }
+            .frame(width: 100, height: 200)
         }
         .menuBarExtraStyle(.window)
     }
@@ -42,3 +41,4 @@ func FetchBislettOsloHardcoded() async {
         print("Fetch error:", error)
     }
 }
+
