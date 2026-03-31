@@ -11,14 +11,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		F0A774782F7AAF2300B5FE2B /* RuterMenuBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RuterMenuBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F0A774782F7AAF2300B5FE2B /* Neste.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Neste.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0A7748F2F7ABB9500B5FE2B /* Project Spec.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Project Spec.md"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		F0A7747A2F7AAF2300B5FE2B /* RuterMenuBar */ = {
+		F0A7747A2F7AAF2300B5FE2B /* Neste */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = RuterMenuBar;
+			path = Neste;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -37,7 +37,7 @@
 		F0A7746F2F7AAF2300B5FE2B = {
 			isa = PBXGroup;
 			children = (
-				F0A7747A2F7AAF2300B5FE2B /* RuterMenuBar */,
+				F0A7747A2F7AAF2300B5FE2B /* Neste */,
 				F0A774792F7AAF2300B5FE2B /* Products */,
 				F0A7748F2F7ABB9500B5FE2B /* Project Spec.md */,
 			);
@@ -46,7 +46,7 @@
 		F0A774792F7AAF2300B5FE2B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F0A774782F7AAF2300B5FE2B /* RuterMenuBar.app */,
+				F0A774782F7AAF2300B5FE2B /* Neste.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -54,9 +54,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		F0A774772F7AAF2300B5FE2B /* RuterMenuBar */ = {
+		F0A774772F7AAF2300B5FE2B /* Neste */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F0A774852F7AAF2400B5FE2B /* Build configuration list for PBXNativeTarget "RuterMenuBar" */;
+			buildConfigurationList = F0A774852F7AAF2400B5FE2B /* Build configuration list for PBXNativeTarget "Neste" */;
 			buildPhases = (
 				F0A774742F7AAF2300B5FE2B /* Sources */,
 				F0A774752F7AAF2300B5FE2B /* Frameworks */,
@@ -67,13 +67,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				F0A7747A2F7AAF2300B5FE2B /* RuterMenuBar */,
+				F0A7747A2F7AAF2300B5FE2B /* Neste */,
 			);
-			name = RuterMenuBar;
+			name = Neste;
 			packageProductDependencies = (
 			);
 			productName = RuterMenuBar;
-			productReference = F0A774782F7AAF2300B5FE2B /* RuterMenuBar.app */;
+			productReference = F0A774782F7AAF2300B5FE2B /* Neste.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -91,7 +91,7 @@
 					};
 				};
 			};
-			buildConfigurationList = F0A774732F7AAF2300B5FE2B /* Build configuration list for PBXProject "RuterMenuBar" */;
+			buildConfigurationList = F0A774732F7AAF2300B5FE2B /* Build configuration list for PBXProject "Neste" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -105,7 +105,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F0A774772F7AAF2300B5FE2B /* RuterMenuBar */,
+				F0A774772F7AAF2300B5FE2B /* Neste */,
 			);
 		};
 /* End PBXProject section */
@@ -263,10 +263,20 @@
 				DEVELOPMENT_TEAM = 65QG6Y8QTF;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = RuterMenuBar/Info.plist;
+				INFOPLIST_FILE = Neste/Info.plist;
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -274,7 +284,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mella.RuterMenuBar;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mella.Neste;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -297,10 +307,20 @@
 				DEVELOPMENT_TEAM = 65QG6Y8QTF;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = RuterMenuBar/Info.plist;
+				INFOPLIST_FILE = Neste/Info.plist;
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -308,7 +328,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mella.RuterMenuBar;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mella.Neste;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -323,7 +343,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		F0A774732F7AAF2300B5FE2B /* Build configuration list for PBXProject "RuterMenuBar" */ = {
+		F0A774732F7AAF2300B5FE2B /* Build configuration list for PBXProject "Neste" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F0A774832F7AAF2400B5FE2B /* Debug */,
@@ -332,7 +352,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F0A774852F7AAF2400B5FE2B /* Build configuration list for PBXNativeTarget "RuterMenuBar" */ = {
+		F0A774852F7AAF2400B5FE2B /* Build configuration list for PBXNativeTarget "Neste" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F0A774862F7AAF2400B5FE2B /* Debug */,
