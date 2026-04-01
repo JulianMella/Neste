@@ -6,10 +6,11 @@
 //
 
 import SwiftUI
-import SwiftData
 
 @main
 struct NesteApp: App {
+    @NSApplicationDelegateAdaptor(RightClickDelegate.self) var rightClickDelegate
+    
     var body: some Scene {
         MenuBarExtra("Test", systemImage: "tram.fill") {
             VStack {
