@@ -10,21 +10,20 @@ import SwiftUI
 
 class RightClickDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
-        NSEvent.addLocalMonitorForEvents(matching: .rightMouseDown) { event in
-            // Check if the click is on a status bar button
-            if let window = event.window,
-               window.className.contains("NSStatusBar") {
-                self.showContextMenu(in: window, at: event.locationInWindow)
-                return nil
-            }
-            return event
-        }
+        NSEvent.addLocalMonitorForEvents(matching: .rightMouseDown, handler: handleRightClick)
     }
     
-    private func showContextMenu(in window: NSWindow, at point: NSPoint) {
+    private func handleRightClick(_ event: NSEvent) -> NSEvent? {
+        if let window = event.window, window.className.contains("NSStatusBar") {
+            self.showMenu(in: window, at: event.locationInWindow)
+        }
+        return event
+    }
+    
+    private func showMenu(in window: NSWindow, at point: NSPoint) {
         // Close the MenuBarExtra window if open
         for w in NSApp.windows where w.isVisible && w != window {
-                w.close()
+            w.close()
         }
         
         let menu = NSMenu()
@@ -37,4 +36,3 @@ class RightClickDelegate: NSObject, NSApplicationDelegate {
         NSApp.terminate(nil)
     }
 }
-
