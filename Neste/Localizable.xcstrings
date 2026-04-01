@@ -1,0 +1,30 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Fetch stop" : {
+      "shouldTranslate" : false
+    },
+    "Quit" : {
+      "comment" : "Quit the application",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quit"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avslutt"
+          }
+        }
+      }
+    },
+    "Test" : {
+
+    }
+  },
+  "version" : "1.1"
+}
