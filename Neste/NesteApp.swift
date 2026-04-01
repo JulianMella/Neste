@@ -9,7 +9,7 @@ import SwiftUI
 
 @main
 struct NesteApp: App {
-    @NSApplicationDelegateAdaptor(RightClickDelegate.self) var rightClickDelegate
+    @NSApplicationDelegateAdaptor private var rightClickDelegate: RightClickDelegate
     
     var body: some Scene {
         MenuBarExtra("Test", systemImage: "tram.fill") {
