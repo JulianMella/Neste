@@ -13,7 +13,7 @@ protocol Endpoint {
 
 // Entur API requires identification through the header ET-Client
 extension Endpoint {
-    var etClientHeader: String {"ET-Client-Header"}
+    var etClientHeader: String {"ET-Client-Name"}
     var clientName: String {"julianmella-neste"}
 }
 
