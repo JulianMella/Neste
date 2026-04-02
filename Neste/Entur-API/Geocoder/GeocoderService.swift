@@ -16,8 +16,10 @@ final class GeocoderService {
     
     func autocomplete(query: String) async throws -> [Feature]? {
         do {
-            let (data, _) = try await URLSession.shared.data(for: geocoderEndpoint.makeRequest(query))
+            let (data, response) = try await URLSession.shared.data(for: geocoderEndpoint.makeRequest(query))
+            
             let decoded = try JSONDecoder().decode(GeocoderResponse.self, from: data)
+            print(response)
             print(decoded)
         } catch {
             print("Fetch error:", error)
