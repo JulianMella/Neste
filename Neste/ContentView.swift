@@ -12,10 +12,10 @@ struct ContentView: View {
     var body: some View {
         if showAddFavorites {
             AddFavoritesView(showAddFavorites: $showAddFavorites)
-                .frame(minWidth: 450, minHeight: 400)
+                .frame(minWidth: 450)
         } else {
             BrowseView(showAddFavorites: $showAddFavorites)
-                .frame(minWidth: 450, minHeight: 400)
+                .frame(minWidth: 450)
         }
         
     }
