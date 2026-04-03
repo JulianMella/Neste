@@ -11,28 +11,12 @@ struct ContentView: View {
         VStack {
             Button(action: {
                 Task {
-                    await FetchBislettOsloHardcoded()
+                    try await GeocoderService().autocomplete(query: "Bislett, oslo")
                 }
             }){
                 Text("Fetch stop")
             }
         }
         .frame(width: 100, height: 200)
-    }
-}
-
-
-func FetchBislettOsloHardcoded() async {
-    let url = URL(string: "https://api.entur.io/geocoder/v1/autocomplete?text=Bislett, Oslo")!
-
-    var request = URLRequest(url: url)
-    request.setValue("julianmella-neste", forHTTPHeaderField: "ET-Client-Name")
-
-    do {
-        let (data, _) = try await URLSession.shared.data(for: request)
-        let decoded = try JSONDecoder().decode(GeocoderResponse.self, from: data)
-        print(decoded)
-    } catch {
-        print("Fetch error:", error)
     }
 }
