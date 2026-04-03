@@ -8,9 +8,23 @@
 import Foundation
 
 struct FavoriteStop {
-    let publicTransportNumber: String
-    let transportType: TransportType
-    let finalDestation: String
-    let stop: String
-    var upcomingArrivals: [Date]
+    let location: String
+    var lines: [Line]
+    
+    struct Line {
+        let publicTransportNumber: String
+        let transportType: TransportType
+        let finalDestination: String
+        var upcomingArrivals: [Date]
+    }
+    
+    var transportTypes: Set<TransportType> {
+        var set: Set<TransportType> = []
+        
+        for line in lines {
+            set.insert(line.transportType)
+        }
+        
+        return set
+    }
 }
