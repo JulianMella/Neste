@@ -7,8 +7,16 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var showAddFavorites = false
+    
     var body: some View {
-        BrowseView()
-            .frame(minWidth: 450, minHeight: 400)
+        if showAddFavorites {
+            AddFavoritesView(showAddFavorites: $showAddFavorites)
+                .frame(minWidth: 450, minHeight: 400)
+        } else {
+            BrowseView(showAddFavorites: $showAddFavorites)
+                .frame(minWidth: 450, minHeight: 400)
+        }
+        
     }
 }
