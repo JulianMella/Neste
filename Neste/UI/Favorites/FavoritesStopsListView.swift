@@ -23,5 +23,6 @@ struct FavoriteStopsListView: View {
                 }
             }
         }
+        .fixedSize(horizontal: false, vertical: true)
     }
 }
