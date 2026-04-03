@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct BrowseView: View {
+    @Binding var showAddFavorites: Bool
     @State private var selectedTab = 0
     
     var body: some View {
@@ -24,7 +25,7 @@ struct BrowseView: View {
 
                 if selectedTab == 0 {
                     Button {
-                        // add favorite action
+                        showAddFavorites.toggle()
                     } label: {
                         Image(systemName: "plus")
                             .font(.caption.weight(.bold))
