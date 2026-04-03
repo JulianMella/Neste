@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct AddFavoritesView: View {
+    @State var addFavoritesViewModel: AddFavoritesViewModel
     @FocusState var isSearchFocused: Bool
     @Binding var showAddFavorites: Bool
     
