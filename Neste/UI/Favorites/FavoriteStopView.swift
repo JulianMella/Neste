@@ -37,7 +37,7 @@ struct FavoriteStopView: View {
             }
         }
         .padding()
-        .frame(width: 300)
+        .frame(maxWidth: .infinity)
     }
 }
 
