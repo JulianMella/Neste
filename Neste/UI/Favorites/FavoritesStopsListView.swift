@@ -12,14 +12,15 @@
 import SwiftUI
 
 struct FavoriteStopsListView: View {
+    var mockData = FavoriteStopsModel.mockData
+    
     
     var body: some View {
         ScrollView {
             VStack {
-                FavoriteStopView()
-                FavoriteStopView()
-                FavoriteStopView()
-                FavoriteStopView()
+                ForEach(mockData, id: \.self) { stop in
+                    FavoriteStopView(stop)
+                }
             }
         }
     }
