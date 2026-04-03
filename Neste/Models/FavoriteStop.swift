@@ -7,15 +7,15 @@
 
 import Foundation
 
-struct FavoriteStop {
+struct FavoriteStop: Hashable {
     let location: String
     var lines: [Line]
     
-    struct Line {
+    struct Line: Hashable {
         let publicTransportNumber: String
         let transportType: TransportType
         let finalDestination: String
-        var upcomingArrivals: [Date]
+        var upcomingArrivals: [String]
     }
     
     var transportTypes: Set<TransportType> {
