@@ -8,11 +8,17 @@
 import SwiftUI
 
 struct AddFavoritesView: View {
+    @FocusState var isSearchFocused: Bool
     @Binding var showAddFavorites: Bool
     
     var body: some View {
-        Button("Hello") {
-            showAddFavorites.toggle()
+        VStack {
+            AddFavoritesSearchBar(showAddFavorites: $showAddFavorites, isSearchFocused: $isSearchFocused)
+            PulsingDots()
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            isSearchFocused = false
         }
     }
 }
