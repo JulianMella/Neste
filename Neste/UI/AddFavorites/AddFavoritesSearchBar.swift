@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct AddFavoritesSearchBar: View {
-    @State var autocompleteQuery: String = ""
-    @Binding var showAddFavorites: Bool
+    @Binding var addFavoritesViewModel: AddFavoritesViewModel
     @FocusState.Binding var isSearchFocused: Bool
+    @Binding var showAddFavorites: Bool
+    
+    @State var autocompleteQuery: String = ""
     
     var emptySearchField: Bool {
         if autocompleteQuery == "" {
@@ -32,8 +34,10 @@ struct AddFavoritesSearchBar: View {
                     .textFieldStyle(.plain)
                     .font(.caption2.weight(.semibold))
                     .onSubmit {
-                        print(autocompleteQuery)
-                        isSearchFocused = false
+                        Task {
+                            await addFavoritesViewModel.search(autocompleteQuery)
+                            isSearchFocused = false
+                        }
                     }
                 }
                 .frame(maxWidth: .infinity, minHeight: 28)
