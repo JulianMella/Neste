@@ -31,13 +31,7 @@ import Observation
             
             let stops: [GeocoderStop] = try await geocoderService.autocomplete(query: query)
             
-            print(stops)
-            
-            geocoderResults = filter(stops)
-            
-            print(geocoderResults)
-            
-            
+            geocoderResults = osloFilter(stops)
         } catch EndpointError.networkError(let URLError) {
             // TODO: Handle this
         } catch EndpointError.httpError(let statusCode) {
@@ -49,7 +43,7 @@ import Observation
         }
     }
     
-    private func filter(_ stops: [GeocoderStop]) -> [GeocoderStop] {
+    private func osloFilter(_ stops: [GeocoderStop]) -> [GeocoderStop] {
         return stops.filter { $0.county == "Oslo" && $0.id.hasPrefix("NSR:StopPlace")}
     }
 }
