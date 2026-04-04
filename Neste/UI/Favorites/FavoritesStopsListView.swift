@@ -12,7 +12,7 @@
 import SwiftUI
 
 struct FavoriteStopsListView: View {
-    var mockData = FavoriteStopsModel.mockData
+    var mockData = MockData.favoriteStops
     
     
     var body: some View {

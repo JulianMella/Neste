@@ -5,8 +5,8 @@
 //  Created by Julian on 03/04/2026.
 //
 
-extension FavoriteStopsModel {
-    static let mockData: [FavoriteStop] = [
+class MockData {
+    static let favoriteStops: [FavoriteStop] = [
         FavoriteStop(
             location: "Bislett",
             lines: [
@@ -57,4 +57,5 @@ extension FavoriteStopsModel {
             ]
         )
     ]
+
 }
