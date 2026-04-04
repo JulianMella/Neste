@@ -14,6 +14,8 @@ struct NesteApp: App {
     var body: some Scene {
         MenuBarExtra("Test", systemImage: "tram.fill") {
             ContentView()
+                .frame(minWidth: 450, maxHeight: 350)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .menuBarExtraStyle(.window)
     }

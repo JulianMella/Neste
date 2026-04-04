@@ -48,7 +48,6 @@ struct BrowseView: View {
                 default: EmptyView()
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 }

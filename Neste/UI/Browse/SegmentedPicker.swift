@@ -41,6 +41,5 @@ struct SegmentedPicker: View {
         .padding(2.5)
         .background(.white.opacity(0.08))
         .clipShape(Capsule())
-        .fixedSize(horizontal: false, vertical: true)
     }
 }
