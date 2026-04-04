@@ -8,14 +8,24 @@
 import SwiftUI
 
 struct AddFavoritesView: View {
-    @State var addFavoritesViewModel: AddFavoritesViewModel
+    @State private var addFavoritesViewModel = AddFavoritesViewModel()
     @FocusState var isSearchFocused: Bool
     @Binding var showAddFavorites: Bool
     
     var body: some View {
         VStack {
-            AddFavoritesSearchBar(showAddFavorites: $showAddFavorites, isSearchFocused: $isSearchFocused)
-            PulsingDots()
+            AddFavoritesSearchBar(addFavoritesViewModel: $addFavoritesViewModel, isSearchFocused: $isSearchFocused, showAddFavorites: $showAddFavorites)
+            
+            if (!addFavoritesViewModel.isLoading && addFavoritesViewModel.geocoderResults.isEmpty) {
+                EmptyView()
+            } else if (addFavoritesViewModel.isLoading) {
+                PulsingDots()
+            } else {
+                Text("Search Results!")
+                ForEach(addFavoritesViewModel.geocoderResults, id: \.self) { geocoderStop in
+                    Text(geocoderStop.id)
+                }
+            }
         }
         .contentShape(Rectangle())
         .onTapGesture {
