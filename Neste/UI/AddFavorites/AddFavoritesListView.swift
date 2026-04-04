@@ -44,7 +44,7 @@ struct AddFavoritesListView: View {
                         
                         if stop.id == stopIDClicked {
                             VStack {
-                                ForEach(MockData.addFavoriteLines, id: \.self) { line in
+                                ForEach(MockData.addFavoriteResults, id: \.self) { line in
                                     HStack {
                                         Text(line.publicTransportNumber)
                                             .frame(width: 24, height: 24)
