@@ -10,11 +10,28 @@ import SwiftUI
 enum TransportType {
     case bus, tram, metro // TODO: Add boat, train, green bus
     
+    init?(_ string: String) {
+        switch string {
+        case "onstreetBus": self = .bus
+        case "onstreetTram": self = .tram
+        case "metroStation": self = .metro
+        default: return nil
+        }
+    }
+    
     var color: Color {
         switch self {
         case .bus: return .red
         case .tram: return .blue
         case .metro: return .orange
+        }
+    }
+    
+    var sfSymbol: String {
+        switch self {
+        case .bus: return "bus.fill"
+        case .tram: return "tram.fill"
+        case .metro: return "train.side.front.car"
         }
     }
 }
