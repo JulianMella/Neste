@@ -22,6 +22,17 @@ extension Endpoint {
         request.setValue(clientName, forHTTPHeaderField: etClientHeader)
         return request
     }
+    
+    func validateHTTPResponse(_ response: URLResponse) throws {
+        if let http = response as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
+            throw EndpointError.httpError(statusCode: http.statusCode)
+        }
+    }
 }
 
-
+enum EndpointError: Error {
+    case networkError(Error)
+    case httpError(statusCode: Int)
+    case decodingError(Error)
+    case unknown
+}
