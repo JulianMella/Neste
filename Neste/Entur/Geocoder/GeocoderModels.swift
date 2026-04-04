@@ -27,7 +27,7 @@ struct GeocoderResponse: Decodable {
     }
 }
 
-struct GeocoderStop {
+struct GeocoderStop: Hashable {
     var id: String
     var name: String
     var county: String
