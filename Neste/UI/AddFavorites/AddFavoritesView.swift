@@ -21,10 +21,9 @@ struct AddFavoritesView: View {
             } else if (addFavoritesViewModel.isLoading) {
                 PulsingDots()
             } else {
-                Text("Search Results!")
-                ForEach(addFavoritesViewModel.geocoderResults, id: \.self) { geocoderStop in
-                    Text(geocoderStop.id)
-                }
+                AddFavoritesListView(geocoderStops: addFavoritesViewModel.geocoderResults)
+                    .padding(.horizontal, 12)
+                    .padding(.bottom, 12)
             }
         }
         .contentShape(Rectangle())
