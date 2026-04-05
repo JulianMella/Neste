@@ -1,5 +1,5 @@
 //
-//  FavoritesView.swift
+//  FavoritesStopListView.swift
 //  Neste
 //
 //  Created by Julian on 03/04/2026.
