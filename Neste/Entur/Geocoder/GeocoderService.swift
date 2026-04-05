@@ -33,6 +33,7 @@ final class GeocoderService {
             throw EndpointError.decodingError(error)
         }
         
+        // TODO: Handle empty list!
         return decoded.features.map {
             GeocoderStop(
                 id: $0.properties.id,

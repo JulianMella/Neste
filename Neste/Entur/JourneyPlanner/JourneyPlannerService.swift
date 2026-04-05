@@ -56,6 +56,7 @@ final class JourneyPlannerService {
             throw EndpointError.decodingError(error)
         }
         
+        // TODO: Handle empty list!
         return decoded.data.stopPlace.estimatedCalls.map {
             StopPlace(
                 publicCode: $0.serviceJourney.journeyPattern.line.publicCode,
