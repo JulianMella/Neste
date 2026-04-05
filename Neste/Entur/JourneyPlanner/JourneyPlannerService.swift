@@ -7,14 +7,14 @@
 
 import Foundation
 
-struct JourneyPlanner: GraphQLEndpoint {
+struct JourneyPlannerEndpoint: GraphQLEndpoint {
     var baseUrl: String = "https://api.entur.io/journey-planner/v3/graphql"
 }
 
 final class JourneyPlannerService {
-    let journeyPlanner = JourneyPlanner()
+    let journeyPlannerEndpoint = JourneyPlannerEndpoint()
     
-    func fetchStopData(stopPlaceID: String) async throws -> [StopPlace] {
+    func fetchStopData(stopPlaceID: String) async throws -> [JourneyPlannerData] {
         let query = """
             {
               stopPlace(id: "\(stopPlaceID)") {
@@ -41,26 +41,27 @@ final class JourneyPlannerService {
         let (data, response): (Data, URLResponse)
         
         do {
-            (data, response) = try await URLSession.shared.data(for: journeyPlanner.makeRequest(with: query))
+            (data, response) = try await URLSession.shared.data(for: journeyPlannerEndpoint.makeRequest(with: query))
         } catch {
             throw EndpointError.networkError(error)
         }
 
-        try journeyPlanner.validateHTTPResponse(response)
+        try journeyPlannerEndpoint.validateHTTPResponse(response)
         
-        let decoded: GraphQLData<StopPlaceData>
+        let decoded: GraphQLData<JourneyPlannerResponse>
         
         do {
-            decoded = try JSONDecoder().decode(GraphQLData<StopPlaceData>.self, from: data)
+            decoded = try JSONDecoder().decode(GraphQLData<JourneyPlannerResponse>.self, from: data)
         } catch {
             throw EndpointError.decodingError(error)
         }
         
         // TODO: Handle empty list!
         return decoded.data.stopPlace.estimatedCalls.map {
-            StopPlace(
+            JourneyPlannerData(
                 publicCode: $0.serviceJourney.journeyPattern.line.publicCode,
-                frontText: $0.destinationDisplay.frontText
+                frontText: $0.destinationDisplay.frontText,
+                transportType: TransportType($0.serviceJourney.transportMode, queryType: .journeyPlanner)!
             )
         }
     }
