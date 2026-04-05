@@ -7,7 +7,7 @@
 import Foundation
 
 protocol Endpoint {
-    var url: String { get }
+    var baseUrl: String { get }
     var etClientHeader: String { get }
     var clientName: String { get }
 }
@@ -17,16 +17,33 @@ extension Endpoint {
     var etClientHeader: String {"ET-Client-Name"}
     var clientName: String {"julianmella-neste"}
     
-    func makeRequest(_ query: String) -> URLRequest {
-        var request = URLRequest(url: URL(string: url + query)!)
-        request.setValue(clientName, forHTTPHeaderField: etClientHeader)
-        return request
-    }
-    
     func validateHTTPResponse(_ response: URLResponse) throws {
         if let http = response as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
             throw EndpointError.httpError(statusCode: http.statusCode)
         }
+    }
+}
+
+protocol RESTEndpoint: Endpoint {}
+
+extension RESTEndpoint {
+    func makeRequest(with query: String) -> URLRequest {
+        var request = URLRequest(url: URL(string: baseUrl + query)!)
+        request.setValue(clientName, forHTTPHeaderField: etClientHeader)
+        return request
+    }
+}
+
+protocol GraphQLEndpoint: Endpoint {}
+
+extension GraphQLEndpoint {
+    func makeRequest(with query: String) -> URLRequest {
+        var request = URLRequest(url: URL(string: baseUrl)!)
+        request.httpMethod = "POST"
+        request.setValue(clientName, forHTTPHeaderField: etClientHeader)
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try? JSONSerialization.data(withJSONObject: ["query": query]) // TODO: Handle this gracefully
+        return request
     }
 }
 
