@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SegmentedPicker: View {
     @Binding var selection: Int
-    let items: [(String, String)]
+    let items: [(String, String?)]
 
     @Namespace private var ns
 
