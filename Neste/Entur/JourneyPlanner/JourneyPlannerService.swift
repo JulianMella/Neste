@@ -32,6 +32,7 @@ final class JourneyPlannerService {
                         publicCode
                       }
                     }
+                    transportMode
                   }
                 }
               }
