@@ -8,21 +8,24 @@
 import SwiftUI
 
 struct AddFavoritesListView: View {
-    var geocoderStops: [GeocoderStop]
+    var searchResults: [AddFavoritesResult]
     @State private var hoveredStopID: String?
     @State private var stopIDClicked: String?
     
     var body: some View {
         ScrollViewReader { proxy in
             ScrollView {
-                ForEach(geocoderStops, id: \.self) { stop in
+                ForEach(searchResults, id: \.self) { result in
                     AddFavoritesStopView(
-                        stop: stop,
+                        parentStopMetadata: result.parentStop,
+                        expandedStopMetadata: result.stopMetadata,
                         hoveredStopID: $hoveredStopID,
                         stopIDClicked: $stopIDClicked,
-                        proxy: proxy)
+                        proxy: proxy
+                    )
                 }
             }
+            .clipShape(RoundedRectangle(cornerRadius: 12))
         }
     }
 }
