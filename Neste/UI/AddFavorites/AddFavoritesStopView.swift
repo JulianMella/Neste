@@ -93,10 +93,15 @@ struct ExpandedStopView: View {
                 SegmentedPicker(selection: $selectedTab, items: pickerItems)
                 .frame(maxWidth: 200)
             }
-
-            ForEach(groupedMetadata[transportTypes[selectedTab]]!, id: \.self) { stop in
-                StopMetadataRow(stop: stop)
+            if let stopGroup = groupedMetadata[transportTypes[selectedTab]] {
+                ForEach(stopGroup, id: \.self) { stop in
+                    StopMetadataRow(stop: stop)
+                }
+            } else {
+                Text("No transportation found at this stop")
+                    .frame(maxWidth: .infinity)
             }
+            
         }
         .padding(10)
     }
