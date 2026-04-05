@@ -13,66 +13,92 @@ struct AddFavoritesStopView: View {
     @Binding var hoveredStopID: String?
     @Binding var stopIDClicked: String?
     let proxy: ScrollViewProxy
-    
+
+    var transportTypes: [TransportType] {
+        parentStopMetadata.uniqueCategories.map{
+            TransportType($0, queryType: .geocoder)!
+        }
+    }
+
+    private var bottomRadius: CGFloat {
+        parentStopMetadata.id == stopIDClicked ? 0 : 12
+    }
+
     var body: some View {
-        Button {
-            stopIDClicked = (stopIDClicked == parentStopMetadata.id) ? nil : parentStopMetadata.id
-            withAnimation {
-                proxy.scrollTo(parentStopMetadata.id)
-            }
-        } label: {
-            VStack {
-                HStack(spacing: 8) {
-                    Text(parentStopMetadata.name)
-                        .font(.system(size: 16))
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.white)
-                    Spacer()
-                    ForEach(parentStopMetadata.uniqueCategories.sorted(), id: \.self) { category in
-                        if let tType = TransportType(category, queryType: .geocoder) {
-                            Image(systemName: tType.sfSymbol)
+        VStack(spacing: 0) {
+            Button {
+                stopIDClicked = (stopIDClicked == parentStopMetadata.id) ? nil : parentStopMetadata.id
+                withAnimation {
+                    proxy.scrollTo(parentStopMetadata.id)
+                }
+            } label: {
+                VStack {
+                    HStack(spacing: 8) {
+                        Text(parentStopMetadata.name)
+                            .font(.system(size: 16))
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.white)
+                        Spacer()
+                        ForEach(transportTypes, id: \.self) { transportType in
+                            Image(systemName: transportType.sfSymbol)
                                 .frame(width: 24, height: 24)
-                                .background(tType.color)
+                                .background(transportType.color)
                                 .cornerRadius(6)
                         }
                     }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+                    .contentShape(Rectangle())
+                    .onHover { isHovered in
+                        hoveredStopID = isHovered ? parentStopMetadata.id : nil
+                    }
                 }
-                .padding(.horizontal, 12)
-                .padding(.top, 10)
-                .padding(.bottom, parentStopMetadata.id == stopIDClicked ? 5 : 10)
-                .contentShape(RoundedRectangle(cornerRadius: 12))
-                .onHover { isHovered in
-                    hoveredStopID = isHovered ? parentStopMetadata.id : nil
-                }
-                
-                if parentStopMetadata.id == stopIDClicked {
-                    ExpandedStopView(expandedStopMetadata: expandedStopMetadata)
-                }
+                .id(parentStopMetadata.id)
+                .background(parentStopMetadata.id == hoveredStopID || parentStopMetadata.id == stopIDClicked ? .white.opacity(0.08) : .clear)
+                .clipShape(UnevenRoundedRectangle(topLeadingRadius: 12, bottomLeadingRadius: bottomRadius, bottomTrailingRadius: bottomRadius, topTrailingRadius: 12))
             }
-            .id(parentStopMetadata.id)
-            .background(parentStopMetadata.id == hoveredStopID || parentStopMetadata.id == stopIDClicked ? .white.opacity(0.08) : .clear)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .buttonStyle(.plain)
+
+            if parentStopMetadata.id == stopIDClicked {
+                ExpandedStopView(transportTypes: transportTypes, expandedStopMetadata: expandedStopMetadata)
+                    .background(.white.opacity(0.08))
+                    .clipShape(UnevenRoundedRectangle(topLeadingRadius: 0, bottomLeadingRadius: 12, bottomTrailingRadius: 12, topTrailingRadius: 0))
+            }
         }
-        .buttonStyle(.plain)
     }
 }
 
 struct ExpandedStopView: View {
+    let transportTypes: [TransportType]
     let expandedStopMetadata: [AddFavoritesResult.StopMetadata]
+    @State private var selectedTab = 0
     
+    var pickerItems: [(String, String?)] {
+        transportTypes.map{($0.pickerText, nil)}
+    }
+
+    // This must be a computed property to guarantee that expandedStopMetadata exists
+    var sortedMetadata: [AddFavoritesResult.StopMetadata] {
+        sortMetadata(expandedStopMetadata)
+    }
+
+    var groupedMetadata: [TransportType : [AddFavoritesResult.StopMetadata]] {
+        groupMetadata(sortedMetadata)
+    }
+
     var body: some View {
         Divider()
         VStack(spacing: 16) {
-            ForEach(expandedStopMetadata, id: \.self) { stop in
+            if transportTypes.count > 1 {
+                SegmentedPicker(selection: $selectedTab, items: pickerItems)
+                .frame(maxWidth: 200)
+            }
+
+            ForEach(groupedMetadata[transportTypes[selectedTab]]!, id: \.self) { stop in
                 StopMetadataRow(stop: stop)
             }
         }
-        .padding(.top, 5)
-        .padding(.bottom, 10)
-        .padding(.horizontal, 10)
-        .contentShape(Rectangle())
-        .pointerStyle(.default)
-        .simultaneousGesture(DragGesture(minimumDistance: 0).onEnded { _ in })
+        .padding(10)
     }
 }
 
