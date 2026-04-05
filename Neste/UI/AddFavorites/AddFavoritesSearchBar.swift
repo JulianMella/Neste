@@ -24,6 +24,17 @@ struct AddFavoritesSearchBar: View {
     var body: some View {
         VStack {
             HStack(spacing: 8) {
+                Button {
+                    showAddFavorites.toggle()
+                } label: {
+                    Image(systemName: "chevron.left")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 32, height: 32)
+                    .background(.white.opacity(0.08))
+                    .clipShape(Circle())
+                }
+                .buttonStyle(.plain)
                 ZStack {
                     TextField(
                         "􀊫 Search for your favorite stops",
@@ -35,32 +46,33 @@ struct AddFavoritesSearchBar: View {
                     .font(.headline.weight(.semibold))
                     .onSubmit {
                         Task {
-                            await addFavoritesViewModel.search(autocompleteQuery)
                             isSearchFocused = false
+                            await addFavoritesViewModel.search(autocompleteQuery)
                         }
                     }
                 }
                 .frame(maxWidth: .infinity, minHeight: 28)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 2.5)
-                .background(Capsule().fill(.white.opacity(0.08)))
+                .background(.white.opacity(0.08))
+                .clipShape(Capsule())
                 .pointerStyle(.horizontalText)
                 .onTapGesture {
                     isSearchFocused = true
                 }
                 
                 Button {
-                    emptySearchField ? showAddFavorites.toggle() : showAddFavorites.toggle()
+                    Task {
+                        isSearchFocused = false
+                        await addFavoritesViewModel.search(autocompleteQuery)
+                    }
                 } label: {
-                    Image(
-                        systemName: emptySearchField ? "xmark" : "magnifyingglass"
-                    )
+                    Image(systemName: "magnifyingglass")
                     .font(.caption.weight(.bold))
                     .foregroundStyle(.white)
                     .frame(width: 32, height: 32)
-                    .background(
-                        emptySearchField ? Circle().fill(.white.opacity(0.08)) : Circle().fill(.blue)
-                    )
+                    .background(.blue)
+                    .clipShape(Circle())
                 }
                 .buttonStyle(.plain)
             }
