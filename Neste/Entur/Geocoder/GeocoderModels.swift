@@ -38,3 +38,5 @@ struct GeocoderStop: Hashable {
     // This datapoint is only utilized in AddFavoritesView, and there we only need unique values.
     var uniqueCategories: Set<String>
 }
+
+typealias StopPlaceParent = GeocoderStop
