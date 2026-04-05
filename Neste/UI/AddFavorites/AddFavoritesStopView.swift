@@ -110,6 +110,7 @@ struct StopMetadataRow: View {
         HStack {
             Text(stop.publicTransportNumber)
                 .frame(width: 24, height: 24)
+                // .padding(.horizontal, stop.publicTransportNumber.count > 1 ? 6 : 8) // TODO: Not satisfied with this result.
                 .background(stop.transportType.color)
                 .cornerRadius(6)
             Text(stop.finalDestination)
