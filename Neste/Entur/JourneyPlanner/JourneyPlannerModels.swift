@@ -11,7 +11,7 @@ struct GraphQLData<T: Decodable>: Decodable {
     var data: T
 }
 
-struct StopPlaceData: Decodable {
+struct JourneyPlannerResponse: Decodable {
     var stopPlace: StopPlace
     
     struct StopPlace: Decodable {
@@ -27,6 +27,7 @@ struct StopPlaceData: Decodable {
             
             struct ServiceJourney: Decodable {
                 var journeyPattern: JourneyPattern
+                var transportMode: String
                 
                 struct JourneyPattern: Decodable {
                     var line: Line
@@ -40,7 +41,8 @@ struct StopPlaceData: Decodable {
     }
 }
 
-struct StopPlace: Hashable {
+struct JourneyPlannerData: Hashable { // TODO: Find a less generic name for this
     var publicCode: String
     var frontText: String
+    var transportType: TransportType
 }
