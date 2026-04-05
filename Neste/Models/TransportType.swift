@@ -46,6 +46,14 @@ enum TransportType {
         case .metro: return "train.side.front.car"
         }
     }
+    
+    var pickerText: String {
+        switch self {
+        case .bus: return "Bus"
+        case .tram: return "Tram"
+        case .metro: return "Metro"
+        }
+    }
 }
 
 enum QueryType {
