@@ -1,5 +1,5 @@
 //
-//  FavoritesView.swift
+//  FavoritesStopListView.swift
 //  Neste
 //
 //  Created by Julian on 03/04/2026.
@@ -12,7 +12,7 @@
 import SwiftUI
 
 struct FavoriteStopsListView: View {
-    var mockData = FavoriteStopsModel.mockData
+    var mockData = MockData.favoriteStops
     
     
     var body: some View {

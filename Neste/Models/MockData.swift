@@ -5,8 +5,8 @@
 //  Created by Julian on 03/04/2026.
 //
 
-extension FavoriteStopsModel {
-    static let mockData: [FavoriteStop] = [
+class MockData {
+    static let favoriteStops: [FavoriteStop] = [
         FavoriteStop(
             location: "Bislett",
             lines: [
@@ -55,6 +55,27 @@ extension FavoriteStopsModel {
                     ]
                 )
             ]
+        )
+    ]
+    
+    static let addFavoriteResults: [FavoriteStop.Line] = [
+        FavoriteStop.Line(
+            publicTransportNumber: "12",
+            transportType: .tram,
+            finalDestination: "Majorstuen",
+            upcomingArrivals: []
+        ),
+        FavoriteStop.Line(
+            publicTransportNumber: "21",
+            transportType: .bus,
+            finalDestination: "Tjuvholmen",
+            upcomingArrivals: []
+        ),
+        FavoriteStop.Line(
+            publicTransportNumber: "2",
+            transportType: .metro,
+            finalDestination: "Stovner",
+            upcomingArrivals: []
         )
     ]
 }
