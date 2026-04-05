@@ -7,18 +7,18 @@
 
 import Foundation
 
-struct GeocoderAutocomplete: Endpoint {
-    var url: String
+struct GeocoderAutocomplete: RESTEndpoint {
+    var baseUrl: String
 }
 
 final class GeocoderService {
-    let geocoderEndpoint = GeocoderAutocomplete(url: "https://api.entur.io/geocoder/v1/autocomplete?text=")
+    let geocoderEndpoint = GeocoderAutocomplete(baseUrl: "https://api.entur.io/geocoder/v1/autocomplete?text=") // TODO: Convert this to URLComponents
     
     func autocomplete(query: String) async throws -> [GeocoderStop] {
         let (data, response): (Data, URLResponse)
         
         do {
-            (data, response) = try await URLSession.shared.data(for: geocoderEndpoint.makeRequest(query))
+            (data, response) = try await URLSession.shared.data(for: geocoderEndpoint.makeRequest(with: query))
         } catch {
             throw EndpointError.networkError(error)
         }
