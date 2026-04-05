@@ -8,27 +8,28 @@
 import SwiftUI
 
 struct AddFavoritesStopView: View {
-    let stop: GeocoderStop
+    let parentStopMetadata: GeocoderStop
+    let expandedStopMetadata: [AddFavoritesResult.StopMetadata]
     @Binding var hoveredStopID: String?
     @Binding var stopIDClicked: String?
     let proxy: ScrollViewProxy
     
     var body: some View {
         Button {
-            stopIDClicked = (stopIDClicked == stop.id) ? nil : stop.id
+            stopIDClicked = (stopIDClicked == parentStopMetadata.id) ? nil : parentStopMetadata.id
             withAnimation {
-                proxy.scrollTo(stop.id)
+                proxy.scrollTo(parentStopMetadata.id)
             }
         } label: {
             VStack {
                 HStack(spacing: 8) {
-                    Text(stop.name)
+                    Text(parentStopMetadata.name)
                         .font(.system(size: 16))
                         .fontWeight(.semibold)
                         .foregroundStyle(.white)
                     Spacer()
-                    ForEach(stop.uniqueCategories.sorted(), id: \.self) { category in
-                        if let tType = TransportType(category) {
+                    ForEach(parentStopMetadata.uniqueCategories.sorted(), id: \.self) { category in
+                        if let tType = TransportType(category, queryType: .geocoder) {
                             Image(systemName: tType.sfSymbol)
                                 .frame(width: 24, height: 24)
                                 .background(tType.color)
@@ -38,19 +39,18 @@ struct AddFavoritesStopView: View {
                 }
                 .padding(.horizontal, 12)
                 .padding(.top, 10)
-                .padding(.bottom, 5)
+                .padding(.bottom, parentStopMetadata.id == stopIDClicked ? 5 : 10)
                 .contentShape(RoundedRectangle(cornerRadius: 12))
                 .onHover { isHovered in
-                    hoveredStopID = isHovered ? stop.id : nil
+                    hoveredStopID = isHovered ? parentStopMetadata.id : nil
                 }
                 
-                if stop.id == stopIDClicked {
-                    ExpandedStopView()
+                if parentStopMetadata.id == stopIDClicked {
+                    ExpandedStopView(expandedStopMetadata: expandedStopMetadata)
                 }
             }
-            .id(stop.id)
-            .background(stop.id == hoveredStopID || stop.id == stopIDClicked ? .white.opacity(0.08) : .clear)
-            .pointerStyle(.link)
+            .id(parentStopMetadata.id)
+            .background(parentStopMetadata.id == hoveredStopID || parentStopMetadata.id == stopIDClicked ? .white.opacity(0.08) : .clear)
             .clipShape(RoundedRectangle(cornerRadius: 12))
         }
         .buttonStyle(.plain)
@@ -58,18 +58,18 @@ struct AddFavoritesStopView: View {
 }
 
 struct ExpandedStopView: View {
-    // TODO: Pass JourneyService data down to here
+    let expandedStopMetadata: [AddFavoritesResult.StopMetadata]
     
     var body: some View {
         Divider()
         VStack(spacing: 16) {
-            ForEach(MockData.addFavoriteResults, id: \.self) { line in
+            ForEach(expandedStopMetadata, id: \.self) { stop in
                 HStack {
-                    Text(line.publicTransportNumber)
+                    Text(stop.publicTransportNumber)
                         .frame(width: 24, height: 24)
-                        .background(line.transportType.color)
+                        .background(stop.transportType.color)
                         .cornerRadius(6)
-                    Text(line.finalDestination)
+                    Text(stop.finalDestination)
                         .font(.system(size: 16))
                     Spacer()
                     Button {
@@ -82,7 +82,9 @@ struct ExpandedStopView: View {
                 }
             }
         }
-        .padding(10)
+        .padding(.top, 5)
+        .padding(.bottom, 10)
+        .padding(.horizontal, 10)
         .contentShape(Rectangle())
         .pointerStyle(.default)
         .simultaneousGesture(DragGesture(minimumDistance: 0).onEnded { _ in })
