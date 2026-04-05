@@ -64,22 +64,7 @@ struct ExpandedStopView: View {
         Divider()
         VStack(spacing: 16) {
             ForEach(expandedStopMetadata, id: \.self) { stop in
-                HStack {
-                    Text(stop.publicTransportNumber)
-                        .frame(width: 24, height: 24)
-                        .background(stop.transportType.color)
-                        .cornerRadius(6)
-                    Text(stop.finalDestination)
-                        .font(.system(size: 16))
-                    Spacer()
-                    Button {
-                        // TODO: Propagate favorites marked up from here.
-                    } label: {
-                        Image(systemName: "star")
-                            .frame(width: 24, height: 24)
-                    }
-                    .buttonStyle(.plain)
-                }
+                StopMetadataRow(stop: stop)
             }
         }
         .padding(.top, 5)
@@ -88,5 +73,30 @@ struct ExpandedStopView: View {
         .contentShape(Rectangle())
         .pointerStyle(.default)
         .simultaneousGesture(DragGesture(minimumDistance: 0).onEnded { _ in })
+    }
+}
+
+struct StopMetadataRow: View {
+    let stop: AddFavoritesResult.StopMetadata
+    @State private var isFavorited = false // TODO: Replace this with an actual check if it has been favorited from before!
+    
+    var body: some View {
+        HStack {
+            Text(stop.publicTransportNumber)
+                .frame(width: 24, height: 24)
+                .background(stop.transportType.color)
+                .cornerRadius(6)
+            Text(stop.finalDestination)
+                .font(.system(size: 16))
+            Spacer()
+            Button {
+                // TODO: Propagate favorites marked up from here.
+                isFavorited.toggle()
+            } label: {
+                Image(systemName: isFavorited ? "star.fill" : "star")
+                    .frame(width: 24, height: 24)
+            }
+            .buttonStyle(.plain)
+        }
     }
 }
