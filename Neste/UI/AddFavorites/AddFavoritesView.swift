@@ -16,12 +16,12 @@ struct AddFavoritesView: View {
         VStack {
             AddFavoritesSearchBar(addFavoritesViewModel: $addFavoritesViewModel, isSearchFocused: $isSearchFocused, showAddFavorites: $showAddFavorites)
             
-            if (!addFavoritesViewModel.isLoading && addFavoritesViewModel.geocoderResults.isEmpty) {
+            if (!addFavoritesViewModel.isLoading && addFavoritesViewModel.searchResults.isEmpty) {
                 EmptyView()
             } else if (addFavoritesViewModel.isLoading) {
                 PulsingDots()
             } else {
-                AddFavoritesListView(geocoderStops: addFavoritesViewModel.geocoderResults)
+                AddFavoritesListView(searchResults: addFavoritesViewModel.searchResults)
                     .padding(.horizontal, 12)
                     .padding(.bottom, 12)
             }
