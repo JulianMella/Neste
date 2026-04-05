@@ -32,7 +32,7 @@ struct AddFavoritesSearchBar: View {
                     .focusEffectDisabled()
                     .focused($isSearchFocused)
                     .textFieldStyle(.plain)
-                    .font(.caption2.weight(.semibold))
+                    .font(.headline.weight(.semibold))
                     .onSubmit {
                         Task {
                             await addFavoritesViewModel.search(autocompleteQuery)
