@@ -21,12 +21,18 @@ struct SegmentedPicker: View {
                 Button {
                     withAnimation(.easeOut(duration: 0.25)) { selection = i }
                 } label: {
-                    Label(items[i].0, systemImage: items[i].1)
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(selected ? .white : .gray)
-                        .animation(.none, value: selection)
-                        .frame(maxWidth: .infinity, minHeight: 28)
-                        .contentShape(Capsule())
+                    Group {
+                        if let icon = items[i].1 {
+                            Label(items[i].0, systemImage: icon)
+                        } else {
+                            Text(items[i].0)
+                        }
+                    }
+                    .font(.headline.weight(.semibold))
+                    .foregroundStyle(selected ? .white : .gray)
+                    .animation(.none, value: selection)
+                    .frame(maxWidth: .infinity, minHeight: 28)
+                    .contentShape(Capsule())
                 }
                 .buttonStyle(.borderless)
                 .background {
