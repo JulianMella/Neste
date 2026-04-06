@@ -17,3 +17,6 @@ struct AddFavoritesResult: Hashable {
         let publicTransportNumber: String
     }
 }
+
+typealias FavoriteStop = AddFavoritesResult
+typealias FavoriteStopChildren = AddFavoritesResult.StopMetadata
