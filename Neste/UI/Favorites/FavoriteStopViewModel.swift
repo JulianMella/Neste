@@ -16,7 +16,7 @@ final class FavoriteStopViewModel {
         favoritedStops[parent, default: []].append(child)
     }
     
-    func delFavorite(parent: GeocoderStop, child: AddFavoritesResult.StopMetadata) {
+    func deleteFavorite(parent: GeocoderStop, child: AddFavoritesResult.StopMetadata) {
         favoritedStops[parent]?.removeAll { $0 == child }
             
         if favoritedStops[parent]?.isEmpty == true {
@@ -24,7 +24,15 @@ final class FavoriteStopViewModel {
         }
     }
     
+    func deleteParent(parent: GeocoderStop) {
+        favoritedStops.removeValue(forKey: parent)
+    }
+    
     func contains(parent: GeocoderStop, child: AddFavoritesResult.StopMetadata) -> Bool {
         return favoritedStops[parent]?.contains(child) ?? false
+    }
+    
+    func getChildrenOf(_ parent: GeocoderStop) -> [AddFavoritesResult.StopMetadata] {
+        return favoritedStops[parent] ?? []
     }
 }
