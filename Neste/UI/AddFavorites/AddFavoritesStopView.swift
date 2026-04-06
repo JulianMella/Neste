@@ -60,7 +60,7 @@ struct AddFavoritesStopView: View {
             .buttonStyle(.plain)
 
             if parentStopMetadata.id == stopIDClicked {
-                ExpandedStopView(transportTypes: transportTypes, expandedStopMetadata: expandedStopMetadata)
+                ExpandedStopView(transportTypes: transportTypes, expandedStopMetadata: expandedStopMetadata, parent: parentStopMetadata)
                     .background(.white.opacity(0.08))
                     .clipShape(UnevenRoundedRectangle(topLeadingRadius: 0, bottomLeadingRadius: 12, bottomTrailingRadius: 12, topTrailingRadius: 0))
             }
@@ -68,9 +68,12 @@ struct AddFavoritesStopView: View {
     }
 }
 
+/* MASSIVE TODO: There is some lag when opening a certain row, this is because a lot of computation happens at that point. Consider moving as much as possible up to AddFavoritesStopView */
+
 struct ExpandedStopView: View {
     let transportTypes: [TransportType]
     let expandedStopMetadata: [AddFavoritesResult.StopMetadata]
+    let parent: GeocoderStop
     @State private var selectedTab = 0
     
     var pickerItems: [(String, String?)] {
@@ -95,7 +98,7 @@ struct ExpandedStopView: View {
             }
             if let stopGroup = groupedMetadata[transportTypes[selectedTab]] {
                 ForEach(stopGroup, id: \.self) { stop in
-                    StopMetadataRow(stop: stop)
+                    StopMetadataRow(stop: stop, parent: parent)
                 }
             } else {
                 Text("No transportation found at this stop")
@@ -108,8 +111,10 @@ struct ExpandedStopView: View {
 }
 
 struct StopMetadataRow: View {
+    @Environment(FavoriteStopViewModel.self) private var favoriteStopViewModel
     let stop: AddFavoritesResult.StopMetadata
-    @State private var isFavorited = false // TODO: Replace this with an actual check if it has been favorited from before!
+    let parent: GeocoderStop
+    var isFavorited: Bool { favoriteStopViewModel.contains(parent: parent, child: stop) }
     
     var body: some View {
         HStack {
@@ -122,8 +127,11 @@ struct StopMetadataRow: View {
                 .font(.system(size: 16))
             Spacer()
             Button {
-                // TODO: Propagate favorites marked up from here.
-                isFavorited.toggle()
+                if isFavorited {
+                    favoriteStopViewModel.delFavorite(parent: parent, child: stop)
+                } else {
+                    favoriteStopViewModel.addFavorite(parent: parent, child: stop)
+                }
             } label: {
                 Image(systemName: isFavorited ? "star.fill" : "star")
                     .frame(width: 24, height: 24)
