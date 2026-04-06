@@ -8,31 +8,33 @@
 import SwiftUI
 
 struct FavoriteStopView: View {
-    let stop: FavoriteStop
-    
-    init(_ stop: FavoriteStop) {
-        self.stop = stop;
-    }
+    let parent: GeocoderStop
+    let viewModel: FavoriteStopViewModel
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(stop.location)
+            Text(parent.name)
                 .font(.system(size: 18))
                 .fontWeight(.semibold)
-            ForEach(stop.lines, id: \.self) { line in
+                .contextMenu{
+                    Button("Delete parent") {
+                        viewModel.deleteParent(parent: parent) //TODO: Better naming
+                    }
+                }
+            ForEach(viewModel.getChildrenOf(parent), id: \.self) { child in
                 HStack {
-                    Text(line.publicTransportNumber)
+                    Text(child.publicTransportNumber)
                         .font(.system(size: 16))
                         .fontWeight(.semibold)
                         .foregroundStyle(.white)
                         .frame(width: 32, height: 28)
-                        .background(line.transportType.color)
+                        .background(child.transportType.color)
                         .cornerRadius(8)
-                    Text(line.finalDestination)
+                    Text(child.finalDestination)
                         .font(.system(size: 16))
                     Spacer(minLength: 24)
                     
-                    Text(line.upcomingArrivals[0])
+                    /*Text(line.upcomingArrivals[0])
                         .font(.system(size: 16))
                     HStack {
                         ForEach(line.upcomingArrivals.dropFirst(), id: \.self) { arrival in
@@ -40,6 +42,11 @@ struct FavoriteStopView: View {
                                 .foregroundStyle(.gray)
                                 .frame(width: 45, alignment: .trailing)
                         }
+                    }*/
+                }
+                .contextMenu {
+                    Button("Delete child") {
+                        viewModel.deleteFavorite(parent: parent, child: child) //TODO: Better naming
                     }
                 }
             }
