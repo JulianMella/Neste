@@ -128,7 +128,7 @@ struct StopMetadataRow: View {
             Spacer()
             Button {
                 if isFavorited {
-                    favoriteStopViewModel.delFavorite(parent: parent, child: stop)
+                    favoriteStopViewModel.deleteFavorite(parent: parent, child: stop)
                 } else {
                     favoriteStopViewModel.addFavorite(parent: parent, child: stop)
                 }
