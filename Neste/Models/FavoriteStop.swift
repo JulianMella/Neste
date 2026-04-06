@@ -5,7 +5,7 @@
 //  Created by Julian on 03/04/2026.
 //
 
-struct FavoriteStop: Hashable {
+/*struct FavoriteStop: Hashable {
     let location: String
     var lines: [Line]
     
@@ -25,4 +25,4 @@ struct FavoriteStop: Hashable {
         
         return set
     }
-}
+}*/
