@@ -7,42 +7,53 @@
 
 import Foundation
 
+// Flattened structs based upon JourneyPlannerResponse data
+struct JourneyPlannerStopMetadata: Hashable {
+    var publicCode: String
+    var frontText: String
+    var transportType: TransportType
+}
+
+struct JourneyPlannerArrivalData: Hashable {
+    var publicCode: String
+    var frontText: String
+    var aimedDepartureTime: String
+    var expectedDepartureTime: String
+}
+
 struct GraphQLData<T: Decodable>: Decodable {
     var data: T
 }
 
 struct JourneyPlannerResponse: Decodable {
-    var stopPlace: StopPlace
-    
-    struct StopPlace: Decodable {
-        var estimatedCalls: [EstimatedCall]
-        
-        struct EstimatedCall: Decodable {
-            var destinationDisplay: DestinationDisplay
-            var serviceJourney: ServiceJourney
-            
-            struct DestinationDisplay: Decodable {
-                var frontText: String
-            }
-            
-            struct ServiceJourney: Decodable {
-                var journeyPattern: JourneyPattern
-                var transportMode: String
-                
-                struct JourneyPattern: Decodable {
-                    var line: Line
-                    
-                    struct Line: Decodable {
-                        var publicCode: String
-                    }
-                }
-            }
-        }
-    }
+    var stopPlace: JourneyPlannerStopPlace
 }
 
-struct JourneyPlannerData: Hashable { // TODO: Find a less generic name for this
-    var publicCode: String
+struct JourneyPlannerStopPlace: Decodable {
+    var estimatedCalls: [JourneyPlannerEstimatedCall]
+}
+
+struct JourneyPlannerEstimatedCall: Decodable {
+    var destinationDisplay: JourneyPlannerDestinationDisplay
+    var serviceJourney: JourneyPlannerServiceJourney
+    // fetchArrivalData() gets these values whilst fetchStopData() doesn't, therefore they are optionals
+    var aimedDepartureTime: String?
+    var expectedDepartureTime: String?
+}
+
+struct JourneyPlannerDestinationDisplay: Decodable {
     var frontText: String
-    var transportType: TransportType
+}
+
+struct JourneyPlannerServiceJourney: Decodable {
+    var journeyPattern: JourneyPlannerJourneyPattern
+    var transportMode: String?
+}
+
+struct JourneyPlannerJourneyPattern: Decodable {
+    var line: JourneyPlannerLine
+}
+
+struct JourneyPlannerLine: Decodable {
+    var publicCode: String
 }
