@@ -67,10 +67,9 @@ final class FavoriteStopViewModel {
              defer {
              isLoading = false
              }*/
+            let arrivals = try await journeyPlannerService.fetchLiveArrivalData(stopPlaceID: parent.id)
             
-            let journeyPlannerArrivalData = try await journeyPlannerService.fetchLiveArrivalData(stopPlaceID: parent.id)
-            
-            for arrival in arrivalData {
+            for arrival in arrivals {
                 print(arrival)
             }
             
@@ -93,9 +92,9 @@ final class FavoriteStopViewModel {
              isLoading = false
              }*/
             
-            let arrivalData: [JourneyPlannerArrivalData] = try await journeyPlannerService.fetchLiveArrivalData(stopPlaceID: child.id)
+            let arrivals = try await journeyPlannerService.fetchLiveArrivalData(stopPlaceID: child.id)
             
-            for arrival in arrivalData {
+            for arrival in arrivals {
                 print(arrival)
             }
             
@@ -118,9 +117,9 @@ final class FavoriteStopViewModel {
              isLoading = false
              }*/
             for child in children {
-                let arrivalData: [JourneyPlannerArrivalData] = try await journeyPlannerService.fetchLiveArrivalData(stopPlaceID: child.id)
+                let arrivals = try await journeyPlannerService.fetchLiveArrivalData(stopPlaceID: child.id)
                 
-                for arrival in arrivalData {
+                for arrival in arrivals {
                     print(arrival)
                 }
             }
