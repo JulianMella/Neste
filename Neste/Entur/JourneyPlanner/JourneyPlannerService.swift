@@ -15,13 +15,15 @@ final class JourneyPlannerService {
     let journeyPlannerEndpoint = JourneyPlannerEndpoint()
     
     func fetchStopData(stopPlaceID: String) async throws -> [JourneyPlannerStopMetadata] {
+        // supportedRegions is a VERY basic solution for supporting other regions
+        // I will not give this much thought unless the app gains popularity
         let query = """
             {
               stopPlace(id: "\(stopPlaceID)") {
                 estimatedCalls(
                     numberOfDeparturesPerLineAndDestinationDisplay: 1
                   numberOfDepartures: 100
-                  whiteListed: {authorities: ["RUT:Authority:RUT"]}
+                  whiteListed: {authorities: ["\(supportedRegions.authorities["Oslo"] ?? "RUT:Authority:RUT")"]}
                 ) {
                   destinationDisplay {
                     frontText
@@ -68,13 +70,15 @@ final class JourneyPlannerService {
     }
     
     func fetchLiveArrivalData(stopPlaceID: String) async throws -> [JourneyPlannerArrivalData]{
+        // supportedRegions is a VERY basic solution for supporting other regions
+        // I will not give this much thought unless the app gains popularity
         let query = """
             {
               stopPlace(id: "\(stopPlaceID)") {
                 estimatedCalls(
                   numberOfDeparturesPerLineAndDestinationDisplay: 8
                   numberOfDepartures: 100
-                  whiteListed: {authorities: ["RUT:Authority:RUT"]}
+                  whiteListed: {authorities: ["\(supportedRegions.authorities["Oslo"] ?? "RUT:Authority:RUT")"]}
                 ) {
                   destinationDisplay {
                     frontText
