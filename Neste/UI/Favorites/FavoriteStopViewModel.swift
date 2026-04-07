@@ -58,6 +58,31 @@ final class FavoriteStopViewModel {
         
         return favoritedStops[parentIndex].stopMetadata
     }
+    
+    // Called when AddFavoritesResult.hasChildrenIds == false
+    func fetchArrivalData(for parent: GeocoderStop) async {
+        do {
+            /*isLoading = true TODO: Create isLoading array for each individual item that can be loaded.
+             
+             defer {
+             isLoading = false
+             }*/
+            
+            let journeyPlannerArrivalData = try await journeyPlannerService.fetchLiveArrivalData(stopPlaceID: parent.id)
+            
+            for arrival in arrivalData {
+                print(arrival)
+            }
+            
+        } catch EndpointError.networkError(let URLError) {
+            // TODO: Handle this
+        } catch EndpointError.httpError(let statusCode) {
+            // TODO: Handle this
+        } catch EndpointError.decodingError {
+            // TODO: Handle this
+        } catch {
+            // TODO: Handle this
+        }
     }
     
     func fetchArrivalData(for child: AddFavoritesResult.StopMetadata) async {
