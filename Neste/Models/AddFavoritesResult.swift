@@ -7,8 +7,8 @@
 
 struct AddFavoritesResult: Hashable {
     let parentStop: GeocoderStop
-    let hasChildren: Bool
-    let stopMetadata: [StopMetadata]
+    let hasChildrenIds: Bool
+    var stopMetadata: [StopMetadata]
     
     struct StopMetadata: Hashable {
         let id: String
