@@ -37,7 +37,7 @@ import Observation
             
             var stops: [GeocoderStop] = try await geocoderService.autocomplete(query: query)
 
-            stops = osloFilter(stops)
+            stops = filter(stops)
 
             for stop in stops {
                 let children = try await stopPlaceService.fetchChildren(parentID: stop.id)
@@ -68,8 +68,10 @@ import Observation
         }
     }
     
-    private func osloFilter(_ stops: [GeocoderStop]) -> [GeocoderStop] {
-        return stops.filter { $0.county == "Oslo" && $0.id.hasPrefix("NSR:StopPlace")}
+    private func filter(_ stops: [GeocoderStop]) -> [GeocoderStop] {
+                                                                    // A basic solution to allow for support of multiple regions.
+                                                                    // I will not give this much thought unless the app gains a relative amount of popularity
+        return stops.filter { $0.id.hasPrefix("NSR:StopPlace") && supportedRegions.authorities.keys.contains($0.county)}
     }
 
     private func fetchStopMetadata(for stopIDs: [String]) async throws -> [AddFavoritesResult.StopMetadata] {
