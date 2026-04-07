@@ -1,15 +1,15 @@
 //
-//  Counties.swift
+//  Implementations.swift
 //  Neste
 //
 //  Created by Julian on 07/04/2026.
 //
 
-static let implementedCounties: [String] = [
-    "Oslo"
-]
+enum supportedRegions {
+    static let authorities: [County : Authority] = [
+        "Oslo" : "RUT:Authority:RUT"
+    ]
+}
 
-
-static let implementedAuthorities = [
-    "
-]
+typealias County = String
+typealias Authority = String
