@@ -5,10 +5,13 @@
 //  Created by Julian on 05/04/2026.
 //
 
+// TODO: MASSIVE REFACTORIZATION OF IT ALL, SOON TO COME.
+
 import SwiftUI
 
 struct AddFavoritesStopView: View {
     let parentStopMetadata: GeocoderStop
+    let hasChildrenIds: Bool
     let expandedStopMetadata: [AddFavoritesResult.StopMetadata]
     @Binding var hoveredStopID: String?
     @Binding var stopIDClicked: String?
@@ -60,7 +63,7 @@ struct AddFavoritesStopView: View {
             .buttonStyle(.plain)
 
             if parentStopMetadata.id == stopIDClicked {
-                ExpandedStopView(transportTypes: transportTypes, expandedStopMetadata: expandedStopMetadata, parent: parentStopMetadata)
+                ExpandedStopView(transportTypes: transportTypes, expandedStopMetadata: expandedStopMetadata, parent: parentStopMetadata, hasChildrenIds: hasChildrenIds)
                     .background(.white.opacity(0.08))
                     .clipShape(UnevenRoundedRectangle(topLeadingRadius: 0, bottomLeadingRadius: 12, bottomTrailingRadius: 12, topTrailingRadius: 0))
             }
@@ -74,6 +77,7 @@ struct ExpandedStopView: View {
     let transportTypes: [TransportType]
     let expandedStopMetadata: [AddFavoritesResult.StopMetadata]
     let parent: GeocoderStop
+    let hasChildrenIds: Bool
     @State private var selectedTab = 0
     
     var pickerItems: [(String, String?)] {
@@ -98,7 +102,7 @@ struct ExpandedStopView: View {
             }
             if let stopGroup = groupedMetadata[transportTypes[selectedTab]] {
                 ForEach(stopGroup, id: \.self) { stop in
-                    StopMetadataRow(stop: stop, parent: parent)
+                    StopMetadataRow(stop: stop, hasChildrenIds: hasChildrenIds, parent: parent)
                 }
             } else {
                 Text("No transportation found at this stop")
@@ -113,8 +117,9 @@ struct ExpandedStopView: View {
 struct StopMetadataRow: View {
     @Environment(FavoriteStopViewModel.self) private var favoriteStopViewModel
     let stop: AddFavoritesResult.StopMetadata
+    let hasChildrenIds: Bool
     let parent: GeocoderStop
-    var isFavorited: Bool { favoriteStopViewModel.contains(parent: parent, child: stop) }
+    var isFavorited: Bool { favoriteStopViewModel.contains(child: stop, in: parent) }
     
     var body: some View {
         HStack {
@@ -130,7 +135,7 @@ struct StopMetadataRow: View {
                 if isFavorited {
                     favoriteStopViewModel.deleteFavorite(parent: parent, child: stop)
                 } else {
-                    favoriteStopViewModel.addFavorite(parent: parent, child: stop)
+                    favoriteStopViewModel.addFavorite(parent: parent, hasChildrenIds: hasChildrenIds, child: stop)
                 }
             } label: {
                 Image(systemName: isFavorited ? "star.fill" : "star")

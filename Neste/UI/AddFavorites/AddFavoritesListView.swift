@@ -18,6 +18,7 @@ struct AddFavoritesListView: View {
                 ForEach(searchResults, id: \.self) { result in
                     AddFavoritesStopView(
                         parentStopMetadata: result.parentStop,
+                        hasChildrenIds: result.hasChildrenIds,
                         expandedStopMetadata: result.stopMetadata,
                         hoveredStopID: $hoveredStopID,
                         stopIDClicked: $stopIDClicked,
