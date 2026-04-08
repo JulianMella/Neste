@@ -5,10 +5,10 @@
 //  Created by Julian on 05/04/2026.
 //
 
-struct AddFavoritesResult: Hashable {
+struct AddFavoritesResult {
     let parentStop: GeocoderStop
     let hasChildrenIds: Bool
-    var stopMetadata: [StopMetadata]
+    var groupedStopMetadata: [TransportType : [StopMetadata]]
     
     struct StopMetadata: Hashable {
         let id: String
