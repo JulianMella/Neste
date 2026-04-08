@@ -16,8 +16,9 @@ struct StopSearchList: View {
         ScrollViewReader { proxy in
             ScrollView {
                 ForEach(searchResults, id: \.parentStop) { result in
-                    StopSearchRow(
+                    StopRow(
                         stopSearchResult: result,
+                        stopRowType: .stopSearch,
                         hoveredStopID: $hoveredStopID,
                         stopIDClicked: $stopIDClicked,
                         proxy: proxy
