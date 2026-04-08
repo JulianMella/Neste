@@ -25,6 +25,5 @@ struct PulsingDots: View {
             }
         }
         .onAppear { isAnimating = true }
-        .padding(.bottom, 12)
     }
 }
