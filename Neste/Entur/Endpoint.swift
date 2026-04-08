@@ -15,7 +15,7 @@ protocol Endpoint {
 // Entur API requires identification through the header ET-Client
 extension Endpoint {
     var etClientHeader: String {"ET-Client-Name"}
-    var clientName: String {"julianmella-neste"}
+    var clientName: String {Bundle.main.infoDictionary?["ET_CLIENT_NAME"] as? String ?? "unnamed-client"}
     
     func validateHTTPResponse(_ response: URLResponse) throws {
         if let http = response as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
