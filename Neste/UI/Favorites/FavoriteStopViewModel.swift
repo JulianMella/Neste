@@ -9,33 +9,48 @@ import Observation
 
 @Observable
 final class FavoriteStopViewModel {
-    var favoritedStops: [FavoriteStop] = [] // TODO: Persistent!
-    var arrivalData: [String : [JourneyPlannerArrivalData]] = [:]
+    var favoritedStops: [FavoriteStop] = [] // TODO: Persistent consider init for just this case, everything else is just stored in memory!
+    var arrivalData: [FavoriteStopChild : [JourneyPlannerArrivalData]] = [:]
     private let journeyPlannerService = JourneyPlannerService()
     
     private func index(of parent: GeocoderStop) -> Int? {
         favoritedStops.firstIndex(where: { $0.parentStop == parent })
     }
     
-    private func index(of child: AddFavoritesResult.StopMetadata, in parentIndex: Int) -> Int? {
-        favoritedStops[parentIndex].stopMetadata.firstIndex(where: { $0 == child })
+    private func keyAndIndex(of child: AddFavoritesResult.StopMetadata, in parentIndex: Int) -> (TransportType, Int)? {
+        for (type, metadata) in favoritedStops[parentIndex].groupedStopMetadata {
+            if let index = metadata.firstIndex(where: { $0 == child }) {
+                return (type, index)
+            }
+        }
+        
+        return nil
     }
     
-    func addFavorite(parent: GeocoderStop, hasChildrenIds: Bool, child: AddFavoritesResult.StopMetadata) {
+    func addFavorite(parent: GeocoderStop, hasChildrenIds: Bool, child: AddFavoritesResult.StopMetadata) async {
         if let parentIndex = index(of: parent) {
-            favoritedStops[parentIndex].stopMetadata.append(child)
+            favoritedStops[parentIndex].groupedStopMetadata[child.transportType, default: []].append(child)
         } else {
-            favoritedStops.append(FavoriteStop(parentStop: parent, hasChildrenIds: hasChildrenIds, stopMetadata: [child]))
+            
+            favoritedStops.append(FavoriteStop(parentStop: parent, hasChildrenIds: hasChildrenIds, groupedStopMetadata: [child.transportType : [child]]))
+        }
+        
+        // TODO: Remove...
+        if hasChildrenIds {
+            await fetchArrivalData(for: child)
+        } else {
+            await fetchArrivalData(for: parent)
         }
     }
     
     func deleteFavorite(parent: GeocoderStop, child: AddFavoritesResult.StopMetadata) {
         if let parentIndex = index(of: parent) {
-            if let childIndex = index(of: child, in: parentIndex) {
-                favoritedStops[parentIndex].stopMetadata.remove(at: childIndex)
+            if let childKeyAndIndex = keyAndIndex(of: child, in: parentIndex) {
+                            // Keep compiler happy with "?", at this point it is safely confirmed that child exists.
+                favoritedStops[parentIndex].groupedStopMetadata[childKeyAndIndex.0]?.remove(at: childKeyAndIndex.1)
             }
             
-            if favoritedStops[parentIndex].stopMetadata.isEmpty {
+            if favoritedStops[parentIndex].groupedStopMetadata.values.allSatisfy({ $0.isEmpty }) {
                 favoritedStops.remove(at: parentIndex)
             }
         }
@@ -50,13 +65,13 @@ final class FavoriteStopViewModel {
     func contains(child: AddFavoritesResult.StopMetadata, in parent: GeocoderStop) -> Bool {
         guard let parentIndex = index(of: parent) else { return false }
         
-        return favoritedStops[parentIndex].stopMetadata.contains{ $0 == child }
+        return keyAndIndex(of: child, in: parentIndex) != nil
     }
     
     func getChildrenOf(_ parent: GeocoderStop) -> [AddFavoritesResult.StopMetadata] {
         guard let parentIndex = index(of: parent) else { return [] }
         
-        return favoritedStops[parentIndex].stopMetadata
+        return favoritedStops[parentIndex].groupedStopMetadata.values.flatMap { $0 }
     }
     
     // Called when AddFavoritesResult.hasChildrenIds == false
@@ -69,9 +84,24 @@ final class FavoriteStopViewModel {
              }*/
             let arrivals = try await journeyPlannerService.fetchLiveArrivalData(stopPlaceID: parent.id)
             
-            for arrival in arrivals {
-                print(arrival)
+            guard let parentIdx = index(of: parent) else {
+                print("Could not find parent")
+                return
             }
+            
+            let allChildren = favoritedStops[parentIdx].groupedStopMetadata.values.flatMap { $0 }
+            
+            // Iterate through arrivals then children first, because the other way around would be more computationally expensive
+            for arrival in arrivals {
+                guard let match = allChildren.first(where: {
+                    arrival.finalDestination == $0.finalDestination &&
+                    arrival.publicTransportNumber == $0.publicTransportNumber
+                }) else { continue }
+                
+                arrivalData[match, default: []].append(arrival)
+            }
+            
+            
             
         } catch EndpointError.networkError(let URLError) {
             // TODO: Handle this
@@ -93,10 +123,7 @@ final class FavoriteStopViewModel {
              }*/
             
             let arrivals = try await journeyPlannerService.fetchLiveArrivalData(stopPlaceID: child.id)
-            
-            for arrival in arrivals {
-                print(arrival)
-            }
+            arrivalData[child, default: []].append(contentsOf: arrivals)
             
         } catch EndpointError.networkError(let URLError) {
             // TODO: Handle this
