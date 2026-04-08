@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct FavoriteStopView: View {
+struct FavoriteStopRow: View {
     let stop: FavoriteStop
     let viewModel: FavoriteStopViewModel
     // TODO: Move the formatter to FavoriteStopViewModel. This requires quite a bit of logic, so not just yet!

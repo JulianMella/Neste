@@ -1,5 +1,5 @@
 //
-//  AddFavoritesViewModel.swift
+//  StopSearchViewModel.swift
 //  Neste
 //
 //  Created by Julian on 04/04/2026.
@@ -8,8 +8,8 @@
 import Observation
 import Foundation
 
-@Observable class AddFavoritesViewModel {
-    var searchResults: [AddFavoritesResult] = []
+@Observable class StopSearchViewModel {
+    var searchResults: [StopSearchResult] = []
     var isLoading: Bool = false
     var errorMessage: String = ""
     
@@ -19,7 +19,7 @@ import Foundation
     
     func search(_ query: String) async {
         do {
-            var queryResults: [AddFavoritesResult] = []
+            var queryResults: [StopSearchResult] = []
 
             isLoading = true
             
@@ -40,10 +40,10 @@ import Foundation
 
                 stopMetadata = sortMetadata(stopMetadata)
                 
-                let groupedMetadata: [TransportType: [AddFavoritesResult.StopMetadata]] = groupMetadata(stopMetadata)
+                let groupedMetadata: [TransportType: [StopSearchResult.StopMetadata]] = groupMetadata(stopMetadata)
                 
                 queryResults.append(
-                    AddFavoritesResult(
+                    StopSearchResult(
                         parentStop: stop,
                         hasChildrenIds: hasChildrenIds,
                         groupedStopMetadata: groupedMetadata
@@ -86,15 +86,15 @@ import Foundation
         }
     }
 
-    private func fetchStopMetadata(for stopIDs: [String]) async throws -> [AddFavoritesResult.StopMetadata] {
-        var metadata: [AddFavoritesResult.StopMetadata] = []
+    private func fetchStopMetadata(for stopIDs: [String]) async throws -> [StopSearchResult.StopMetadata] {
+        var metadata: [StopSearchResult.StopMetadata] = []
         
         for id in stopIDs {
             let departures = try await journeyPlannerService.fetchStopData(stopPlaceID: id)
             
             for departure in departures {
                 metadata.append(
-                    AddFavoritesResult.StopMetadata(
+                    StopSearchResult.StopMetadata(
                         id: id,
                         transportType: departure.transportType,
                         finalDestination: departure.frontText,
@@ -107,11 +107,11 @@ import Foundation
         return metadata
     }
     
-    private func sortMetadata(_ metadata: [AddFavoritesResult.StopMetadata]) -> [AddFavoritesResult.StopMetadata] {
+    private func sortMetadata(_ metadata: [StopSearchResult.StopMetadata]) -> [StopSearchResult.StopMetadata] {
         return metadata.sorted(by: {$0.publicTransportNumber.localizedStandardCompare($1.publicTransportNumber) == .orderedAscending})
     }
     
-    private func groupMetadata(_ metadata: [AddFavoritesResult.StopMetadata]) -> [TransportType: [AddFavoritesResult.StopMetadata]] {
+    private func groupMetadata(_ metadata: [StopSearchResult.StopMetadata]) -> [TransportType: [StopSearchResult.StopMetadata]] {
         return Dictionary(grouping: metadata, by: \.transportType)
     }
 }
