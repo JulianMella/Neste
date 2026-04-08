@@ -130,9 +130,7 @@ struct StopMetadataRow: View {
                 if isFavorited {
                     favoriteStopViewModel.deleteFavorite(parent: parent, child: stop)
                 } else {
-                    Task {
-                        await favoriteStopViewModel.addFavorite(parent: parent, hasChildrenIds: hasChildrenIds, child: stop)
-                    }
+                    favoriteStopViewModel.addFavorite(parent: parent, hasChildrenIds: hasChildrenIds, child: stop)
                 }
             } label: {
                 Image(systemName: isFavorited ? "star.fill" : "star")
