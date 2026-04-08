@@ -9,30 +9,159 @@ import Observation
 
 @Observable
 final class FavoriteStopViewModel {
-    var favoritedStops: [GeocoderStop : [AddFavoritesResult.StopMetadata]] = [:] // TODO: Persistent!
+    var favoritedStops: [FavoriteStop] = [] // TODO: Persistent consider init for just this case, everything else is just stored in memory!
+    var arrivalData: [FavoriteStopChild : [JourneyPlannerArrivalData]] = [:]
+    private let journeyPlannerService = JourneyPlannerService()
     
+    private func index(of parent: GeocoderStop) -> Int? {
+        favoritedStops.firstIndex(where: { $0.parentStop == parent })
+    }
     
-    func addFavorite(parent: GeocoderStop, child: AddFavoritesResult.StopMetadata) {
-        favoritedStops[parent, default: []].append(child)
+    private func keyAndIndex(of child: AddFavoritesResult.StopMetadata, in parentIndex: Int) -> (TransportType, Int)? {
+        for (type, metadata) in favoritedStops[parentIndex].groupedStopMetadata {
+            if let index = metadata.firstIndex(where: { $0 == child }) {
+                return (type, index)
+            }
+        }
+        
+        return nil
+    }
+    
+    func addFavorite(parent: GeocoderStop, hasChildrenIds: Bool, child: AddFavoritesResult.StopMetadata) async {
+        if let parentIndex = index(of: parent) {
+            favoritedStops[parentIndex].groupedStopMetadata[child.transportType, default: []].append(child)
+        } else {
+            
+            favoritedStops.append(FavoriteStop(parentStop: parent, hasChildrenIds: hasChildrenIds, groupedStopMetadata: [child.transportType : [child]]))
+        }
+        
+        // TODO: Remove...
+        if hasChildrenIds {
+            await fetchArrivalData(for: child)
+        } else {
+            await fetchArrivalData(for: parent)
+        }
     }
     
     func deleteFavorite(parent: GeocoderStop, child: AddFavoritesResult.StopMetadata) {
-        favoritedStops[parent]?.removeAll { $0 == child }
+        if let parentIndex = index(of: parent) {
+            if let childKeyAndIndex = keyAndIndex(of: child, in: parentIndex) {
+                            // Keep compiler happy with "?", at this point it is safely confirmed that child exists.
+                favoritedStops[parentIndex].groupedStopMetadata[childKeyAndIndex.0]?.remove(at: childKeyAndIndex.1)
+            }
             
-        if favoritedStops[parent]?.isEmpty == true {
-            favoritedStops.removeValue(forKey: parent)
+            if favoritedStops[parentIndex].groupedStopMetadata.values.allSatisfy({ $0.isEmpty }) {
+                favoritedStops.remove(at: parentIndex)
+            }
         }
     }
     
     func deleteParent(parent: GeocoderStop) {
-        favoritedStops.removeValue(forKey: parent)
+        if let parentIndex = index(of: parent) {
+            favoritedStops.remove(at: parentIndex)
+        }
     }
     
-    func contains(parent: GeocoderStop, child: AddFavoritesResult.StopMetadata) -> Bool {
-        return favoritedStops[parent]?.contains(child) ?? false
+    func contains(child: AddFavoritesResult.StopMetadata, in parent: GeocoderStop) -> Bool {
+        guard let parentIndex = index(of: parent) else { return false }
+        
+        return keyAndIndex(of: child, in: parentIndex) != nil
     }
     
     func getChildrenOf(_ parent: GeocoderStop) -> [AddFavoritesResult.StopMetadata] {
-        return favoritedStops[parent] ?? []
+        guard let parentIndex = index(of: parent) else { return [] }
+        
+        return favoritedStops[parentIndex].groupedStopMetadata.values.flatMap { $0 }
     }
+    
+    // Called when AddFavoritesResult.hasChildrenIds == false
+    func fetchArrivalData(for parent: GeocoderStop) async {
+        do {
+            /*isLoading = true TODO: Create isLoading array for each individual item that can be loaded.
+             
+             defer {
+             isLoading = false
+             }*/
+            let arrivals = try await journeyPlannerService.fetchLiveArrivalData(stopPlaceID: parent.id)
+            
+            guard let parentIdx = index(of: parent) else {
+                print("Could not find parent")
+                return
+            }
+            
+            let allChildren = favoritedStops[parentIdx].groupedStopMetadata.values.flatMap { $0 }
+            
+            // Iterate through arrivals then children first, because the other way around would be more computationally expensive
+            for arrival in arrivals {
+                guard let match = allChildren.first(where: {
+                    arrival.finalDestination == $0.finalDestination &&
+                    arrival.publicTransportNumber == $0.publicTransportNumber
+                }) else { continue }
+                
+                arrivalData[match, default: []].append(arrival)
+            }
+            
+            
+            
+        } catch EndpointError.networkError(let URLError) {
+            // TODO: Handle this
+        } catch EndpointError.httpError(let statusCode) {
+            // TODO: Handle this
+        } catch EndpointError.decodingError {
+            // TODO: Handle this
+        } catch {
+            // TODO: Handle this
+        }
+    }
+    
+    func fetchArrivalData(for child: AddFavoritesResult.StopMetadata) async {
+        do {
+            /*isLoading = true TODO: Create isLoading array for each individual item that can be loaded.
+             
+             defer {
+             isLoading = false
+             }*/
+            
+            let arrivals = try await journeyPlannerService.fetchLiveArrivalData(stopPlaceID: child.id)
+            arrivalData[child, default: []].append(contentsOf: arrivals)
+            
+        } catch EndpointError.networkError(let URLError) {
+            // TODO: Handle this
+        } catch EndpointError.httpError(let statusCode) {
+            // TODO: Handle this
+        } catch EndpointError.decodingError {
+            // TODO: Handle this
+        } catch {
+            // TODO: Handle this
+        }
+    }
+    
+    func fetchArrivalData(for children: [AddFavoritesResult.StopMetadata]) async {
+        do {
+            /*isLoading = true TODO: Create isLoading array for each individual item that can be loaded.
+             
+             defer {
+             isLoading = false
+             }*/
+            for child in children {
+                let arrivals = try await journeyPlannerService.fetchLiveArrivalData(stopPlaceID: child.id)
+                
+                for arrival in arrivals {
+                    print(arrival)
+                }
+            }
+            
+        } catch EndpointError.networkError(let URLError) {
+            // TODO: Handle this
+        } catch EndpointError.httpError(let statusCode) {
+            // TODO: Handle this
+        } catch EndpointError.decodingError {
+            // TODO: Handle this
+        } catch {
+            // TODO: Handle this
+        }
+    }
+    
+    
+     // UpdateArrivalData, when the amount of arrival data goes down to four for a certain nsr stop place, call fetchArrivalData from the point in time of the last arrival data that we have and get 4 queries!
 }

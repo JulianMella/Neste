@@ -8,20 +8,26 @@
 import SwiftUI
 
 struct FavoriteStopView: View {
-    let parent: GeocoderStop
+    let stop: FavoriteStop
     let viewModel: FavoriteStopViewModel
+    // TODO: Move the formatter to FavoriteStopViewModel. This requires quite a bit of logic, so not just yet!
+    let formatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "HH:mm"
+        return f
+    }()
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(parent.name)
+            Text(stop.parentStop.name)
                 .font(.system(size: 18))
                 .fontWeight(.semibold)
                 .contextMenu{
                     Button("Delete parent") {
-                        viewModel.deleteParent(parent: parent) //TODO: Better naming
+                        viewModel.deleteParent(parent: stop.parentStop) //TODO: Better naming
                     }
                 }
-            ForEach(viewModel.getChildrenOf(parent), id: \.self) { child in
+            ForEach(viewModel.getChildrenOf(stop.parentStop), id: \.self) { child in
                 HStack {
                     Text(child.publicTransportNumber)
                         .font(.system(size: 16))
@@ -33,20 +39,22 @@ struct FavoriteStopView: View {
                     Text(child.finalDestination)
                         .font(.system(size: 16))
                     Spacer(minLength: 24)
-                    
-                    /*Text(line.upcomingArrivals[0])
-                        .font(.system(size: 16))
-                    HStack {
-                        ForEach(line.upcomingArrivals.dropFirst(), id: \.self) { arrival in
-                            Text(arrival)
-                                .foregroundStyle(.gray)
-                                .frame(width: 45, alignment: .trailing)
+                                                                        // TODO: This is not valid for all cases, such as late in night where only 1, 2 or 3 transport goes. - fix
+                    if let arrivals = viewModel.arrivalData[child], arrivals.count > 3 {
+                        Text(formatter.string(from: arrivals[0].aimedDepartureTime))
+                            .font(.system(size: 16))
+                        HStack {
+                            ForEach(1..<4, id: \.self) { i in
+                                Text(formatter.string(from: arrivals[i].aimedDepartureTime))
+                                    .foregroundStyle(.gray)
+                                    .frame(width: 45, alignment: .trailing)
+                            }
                         }
-                    }*/
+                    }
                 }
                 .contextMenu {
                     Button("Delete child") {
-                        viewModel.deleteFavorite(parent: parent, child: child) //TODO: Better naming
+                        viewModel.deleteFavorite(parent: stop.parentStop, child: child) //TODO: Better naming
                     }
                 }
             }

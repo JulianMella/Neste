@@ -5,36 +5,43 @@
 //  Created by Julian on 05/04/2026.
 //
 
+// TODO: MASSIVE REFACTORIZATION OF IT ALL, SOON TO COME.
+
 import SwiftUI
 
 struct AddFavoritesStopView: View {
-    let parentStopMetadata: GeocoderStop
-    let expandedStopMetadata: [AddFavoritesResult.StopMetadata]
+    let addFavoritesResult: AddFavoritesResult
     @Binding var hoveredStopID: String?
     @Binding var stopIDClicked: String?
     let proxy: ScrollViewProxy
-
+    
+    var parentId: String {
+        addFavoritesResult.parentStop.id
+    }
+    
+    var parentName: String {
+        addFavoritesResult.parentStop.name
+    }
+    
     var transportTypes: [TransportType] {
-        parentStopMetadata.uniqueCategories.map{
-            TransportType($0, queryType: .geocoder)!
-        }
+        addFavoritesResult.parentStop.transportTypes
     }
 
     private var bottomRadius: CGFloat {
-        parentStopMetadata.id == stopIDClicked ? 0 : 12
+        parentId == stopIDClicked ? 0 : 12
     }
 
     var body: some View {
         VStack(spacing: 0) {
             Button {
-                stopIDClicked = (stopIDClicked == parentStopMetadata.id) ? nil : parentStopMetadata.id
+                stopIDClicked = (stopIDClicked == parentId) ? nil : parentId
                 withAnimation {
-                    proxy.scrollTo(parentStopMetadata.id)
+                    proxy.scrollTo(parentId)
                 }
             } label: {
                 VStack {
                     HStack(spacing: 8) {
-                        Text(parentStopMetadata.name)
+                        Text(parentName)
                             .font(.system(size: 16))
                             .fontWeight(.semibold)
                             .foregroundStyle(.white)
@@ -50,17 +57,17 @@ struct AddFavoritesStopView: View {
                     .padding(.vertical, 10)
                     .contentShape(Rectangle())
                     .onHover { isHovered in
-                        hoveredStopID = isHovered ? parentStopMetadata.id : nil
+                        hoveredStopID = isHovered ? parentId : nil
                     }
                 }
-                .id(parentStopMetadata.id)
-                .background(parentStopMetadata.id == hoveredStopID || parentStopMetadata.id == stopIDClicked ? .white.opacity(0.08) : .clear)
+                .id(parentId)
+                .background(parentId == hoveredStopID || parentId == stopIDClicked ? .white.opacity(0.08) : .clear)
                 .clipShape(UnevenRoundedRectangle(topLeadingRadius: 12, bottomLeadingRadius: bottomRadius, bottomTrailingRadius: bottomRadius, topTrailingRadius: 12))
             }
             .buttonStyle(.plain)
 
-            if parentStopMetadata.id == stopIDClicked {
-                ExpandedStopView(transportTypes: transportTypes, expandedStopMetadata: expandedStopMetadata, parent: parentStopMetadata)
+            if parentId == stopIDClicked {
+                ExpandedStopView(transportTypes: transportTypes, groupedStopMetadata: addFavoritesResult.groupedStopMetadata, parent: addFavoritesResult.parentStop, hasChildrenIds: addFavoritesResult.hasChildrenIds)
                     .background(.white.opacity(0.08))
                     .clipShape(UnevenRoundedRectangle(topLeadingRadius: 0, bottomLeadingRadius: 12, bottomTrailingRadius: 12, topTrailingRadius: 0))
             }
@@ -72,21 +79,13 @@ struct AddFavoritesStopView: View {
 
 struct ExpandedStopView: View {
     let transportTypes: [TransportType]
-    let expandedStopMetadata: [AddFavoritesResult.StopMetadata]
+    let groupedStopMetadata: [TransportType: [AddFavoritesResult.StopMetadata]]
     let parent: GeocoderStop
+    let hasChildrenIds: Bool
     @State private var selectedTab = 0
     
     var pickerItems: [(String, String?)] {
         transportTypes.map{($0.pickerText, nil)}
-    }
-
-    // This must be a computed property to guarantee that expandedStopMetadata exists
-    var sortedMetadata: [AddFavoritesResult.StopMetadata] {
-        sortMetadata(expandedStopMetadata)
-    }
-
-    var groupedMetadata: [TransportType : [AddFavoritesResult.StopMetadata]] {
-        groupMetadata(sortedMetadata)
     }
 
     var body: some View {
@@ -96,9 +95,9 @@ struct ExpandedStopView: View {
                 SegmentedPicker(selection: $selectedTab, items: pickerItems)
                 .frame(maxWidth: 200)
             }
-            if let stopGroup = groupedMetadata[transportTypes[selectedTab]] {
+            if let stopGroup = groupedStopMetadata[transportTypes[selectedTab]] {
                 ForEach(stopGroup, id: \.self) { stop in
-                    StopMetadataRow(stop: stop, parent: parent)
+                    StopMetadataRow(stop: stop, hasChildrenIds: hasChildrenIds, parent: parent)
                 }
             } else {
                 Text("No transportation found at this stop")
@@ -113,8 +112,9 @@ struct ExpandedStopView: View {
 struct StopMetadataRow: View {
     @Environment(FavoriteStopViewModel.self) private var favoriteStopViewModel
     let stop: AddFavoritesResult.StopMetadata
+    let hasChildrenIds: Bool
     let parent: GeocoderStop
-    var isFavorited: Bool { favoriteStopViewModel.contains(parent: parent, child: stop) }
+    var isFavorited: Bool { favoriteStopViewModel.contains(child: stop, in: parent) }
     
     var body: some View {
         HStack {
@@ -130,7 +130,9 @@ struct StopMetadataRow: View {
                 if isFavorited {
                     favoriteStopViewModel.deleteFavorite(parent: parent, child: stop)
                 } else {
-                    favoriteStopViewModel.addFavorite(parent: parent, child: stop)
+                    Task {
+                        await favoriteStopViewModel.addFavorite(parent: parent, hasChildrenIds: hasChildrenIds, child: stop)
+                    }
                 }
             } label: {
                 Image(systemName: isFavorited ? "star.fill" : "star")

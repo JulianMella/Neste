@@ -5,10 +5,10 @@
 //  Created by Julian on 05/04/2026.
 //
 
-struct AddFavoritesResult: Hashable {
+struct AddFavoritesResult {
     let parentStop: GeocoderStop
-    let hasChildren: Bool
-    let stopMetadata: [StopMetadata]
+    let hasChildrenIds: Bool
+    var groupedStopMetadata: [TransportType : [StopMetadata]]
     
     struct StopMetadata: Hashable {
         let id: String
@@ -19,4 +19,4 @@ struct AddFavoritesResult: Hashable {
 }
 
 typealias FavoriteStop = AddFavoritesResult
-typealias FavoriteStopChildren = AddFavoritesResult.StopMetadata
+typealias FavoriteStopChild = AddFavoritesResult.StopMetadata
