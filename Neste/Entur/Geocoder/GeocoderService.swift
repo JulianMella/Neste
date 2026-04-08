@@ -40,13 +40,11 @@ struct GeocoderService {
             
             guard !transportTypeSet.isEmpty else { return nil }
             
-            let sortedTransportTypeArray = Array(transportTypeSet).sorted(by: {$0.sortOrder < $1.sortOrder})
-            
             return GeocoderStop(
                 id: call.properties.id,
                 name: call.properties.name,
                 county: call.properties.county,
-                transportTypes: sortedTransportTypeArray
+                transportTypes: Array(transportTypeSet)
             )
         }
     }
