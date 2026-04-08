@@ -6,24 +6,16 @@
 //
 
 import Observation
+import Foundation
 
 @Observable class AddFavoritesViewModel {
-    var errorMessage: String
-    var searchResults: [AddFavoritesResult]
-    var isLoading: Bool
+    var searchResults: [AddFavoritesResult] = []
+    var isLoading: Bool = false
+    var errorMessage: String = ""
     
-    private let geocoderService: GeocoderService
-    private let stopPlaceService: StopPlaceService
-    private let journeyPlannerService: JourneyPlannerService
-    
-    init() {
-        self.errorMessage = ""
-        self.searchResults = []
-        self.isLoading = false
-        self.geocoderService = GeocoderService()
-        self.stopPlaceService = StopPlaceService()
-        self.journeyPlannerService = JourneyPlannerService()
-    }
+    private let geocoderService = GeocoderService()
+    private let stopPlaceService = StopPlaceService()
+    private let journeyPlannerService = JourneyPlannerService()
     
     func search(_ query: String) async {
         do {
@@ -36,21 +28,25 @@ import Observation
             }
             
             var stops: [GeocoderStop] = try await geocoderService.autocomplete(query: query)
-
-            stops = filter(stops)
-
+            
+            stops = cleanUpData(of: stops)
+            
             for stop in stops {
                 let children = try await stopPlaceService.fetchChildren(parentID: stop.id)
                 let hasChildrenIds = !children.isEmpty
                 let stopIDs = hasChildrenIds ? children.map{$0.id} : [stop.id]
 
-                let stopMetadata = try await fetchStopMetadata(for: stopIDs)
+                var stopMetadata = try await fetchStopMetadata(for: stopIDs)
 
+                stopMetadata = sortMetadata(stopMetadata)
+                
+                let groupedMetadata: [TransportType: [AddFavoritesResult.StopMetadata]] = groupMetadata(stopMetadata)
+                
                 queryResults.append(
                     AddFavoritesResult(
                         parentStop: stop,
                         hasChildrenIds: hasChildrenIds,
-                        stopMetadata: stopMetadata
+                        groupedStopMetadata: groupedMetadata
                     )
                 )
             }
@@ -68,10 +64,26 @@ import Observation
         }
     }
     
+    private func cleanUpData(of stops: [GeocoderStop]) ->  [GeocoderStop]{
+        return sortTransportTypes(in: filter(stops))
+    }
+    
+    
     private func filter(_ stops: [GeocoderStop]) -> [GeocoderStop] {
-                                                                    // A basic solution to allow for support of multiple regions.
-                                                                    // I will not give this much thought unless the app gains a relative amount of popularity
-        return stops.filter { $0.id.hasPrefix("NSR:StopPlace") && supportedRegions.authorities.keys.contains($0.county)}
+                                                                // A basic solution to allow for support of multiple regions.
+                                                                // I will not give this much thought unless the app gains a relative amount of popularity
+        return stops.filter{ $0.id.hasPrefix("NSR:StopPlace") && supportedRegions.authorities.keys.contains($0.county)}
+    }
+    
+    private func sortTransportTypes(in stops: [GeocoderStop]) -> [GeocoderStop] {
+        stops.map {
+            return GeocoderStop(
+                id: $0.id,
+                name: $0.name,
+                county: $0.county,
+                transportTypes: $0.transportTypes.sorted(by: {$0.sortOrder < $1.sortOrder})
+            )
+        }
     }
 
     private func fetchStopMetadata(for stopIDs: [String]) async throws -> [AddFavoritesResult.StopMetadata] {
@@ -93,5 +105,13 @@ import Observation
         }
 
         return metadata
+    }
+    
+    private func sortMetadata(_ metadata: [AddFavoritesResult.StopMetadata]) -> [AddFavoritesResult.StopMetadata] {
+        return metadata.sorted(by: {$0.publicTransportNumber.localizedStandardCompare($1.publicTransportNumber) == .orderedAscending})
+    }
+    
+    private func groupMetadata(_ metadata: [AddFavoritesResult.StopMetadata]) -> [TransportType: [AddFavoritesResult.StopMetadata]] {
+        return Dictionary(grouping: metadata, by: \.transportType)
     }
 }
