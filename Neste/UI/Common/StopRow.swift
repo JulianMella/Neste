@@ -18,6 +18,8 @@ struct StopRow: View {
     @Binding var stopIDClicked: String?
     let proxy: ScrollViewProxy
     
+    @Environment(FavoriteStopViewModel.self) private var favoriteStopViewModel
+    
     var parentId: String {
         stopSearchResult.parentStop.id
     }
@@ -61,6 +63,13 @@ struct StopRow: View {
                     .contentShape(Rectangle())
                     .onHover { isHovered in
                         hoveredStopID = isHovered ? parentId : nil
+                    }
+                    .contextMenu{
+                        if stopRowType == .favoriteStop {
+                            Button("Delete parent") {
+                                favoriteStopViewModel.deleteParent(parent: stopSearchResult.parentStop) //TODO: Better naming
+                            }
+                        }
                     }
                 }
                 .id(parentId)
