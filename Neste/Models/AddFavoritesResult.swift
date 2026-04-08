@@ -19,4 +19,4 @@ struct AddFavoritesResult: Hashable {
 }
 
 typealias FavoriteStop = AddFavoritesResult
-typealias FavoriteStopChildren = AddFavoritesResult.StopMetadata
+typealias FavoriteStopChild = AddFavoritesResult.StopMetadata
