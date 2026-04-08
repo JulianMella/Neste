@@ -12,31 +12,26 @@
 import Foundation
 
 struct GeocoderResponse: Decodable {
-    var features: [Feature]
-    
-    struct Feature: Decodable {
-        var properties: Properties
-        
-        struct Properties: Decodable {
-            // var geometry: Geometry
-            var id: String
-            var name: String
-            var county: String
-            var category: [String]
-        }
-    }
+    var features: [GeocoderFeature]
+}
+
+struct GeocoderFeature: Decodable {
+    var properties: GeocoderProperties
+}
+
+struct GeocoderProperties: Decodable {
+    // var geometry: Geometry
+    var id: String
+    var name: String
+    var county: String
+    var category: [String]
 }
 
 struct GeocoderStop: Hashable {
     var id: String
     var name: String
     var county: String
-
-    // Category from GeocoderResponse.Feature.Properties is remapped to a set
-    // That specific field provides a list of all the public transportation types that exist in a given stop
-    // So it could be repetitive, saying [Bus, Bus, Tram, Tram] if many different lines travel through that stop
-    // This datapoint is only utilized in AddFavoritesView, and there we only need unique values.
-    var uniqueCategories: Set<String>
+    var transportTypes: [TransportType]
 }
 
 typealias StopPlaceParent = GeocoderStop
