@@ -11,8 +11,9 @@ struct JourneyPlannerEndpoint: GraphQLEndpoint {
     var baseUrl: String = "https://api.entur.io/journey-planner/v3/graphql"
 }
 
-final class JourneyPlannerService {
+struct JourneyPlannerService {
     let journeyPlannerEndpoint = JourneyPlannerEndpoint()
+    let formatter = ISO8601DateFormatter()
     
     func fetchStopData(stopPlaceID: String) async throws -> [JourneyPlannerStopMetadata] {
         // supportedRegions is a VERY basic solution for supporting other regions
@@ -59,12 +60,17 @@ final class JourneyPlannerService {
             throw EndpointError.decodingError(error)
         }
         
-        // TODO: safely unwrap optionals
-        return decoded.data.stopPlace.estimatedCalls.map {
-            JourneyPlannerStopMetadata(
-                publicCode: $0.serviceJourney.journeyPattern.line.publicCode,
-                frontText: $0.destinationDisplay.frontText,
-                transportType: TransportType($0.serviceJourney.transportMode!, queryType: .journeyPlanner)!
+        return decoded.data.stopPlace.estimatedCalls.compactMap { call -> JourneyPlannerStopMetadata? in
+            guard let transportMode = call.serviceJourney.transportMode,
+                    let transportType = TransportType(transportMode, queryType: .journeyPlanner)
+            else {
+                return nil
+            }
+            
+            return JourneyPlannerStopMetadata(
+                publicCode: call.serviceJourney.journeyPattern.line.publicCode,
+                frontText: call.destinationDisplay.frontText,
+                transportType: transportType
             )
         }
     }
@@ -115,13 +121,18 @@ final class JourneyPlannerService {
             throw EndpointError.decodingError(error)
         }
         
-        // TODO: safely unwrap optionals
-        return decoded.data.stopPlace.estimatedCalls.map {
-            JourneyPlannerArrivalData(
-                publicCode: $0.serviceJourney.journeyPattern.line.publicCode,
-                frontText: $0.destinationDisplay.frontText,
-                aimedDepartureTime: $0.aimedDepartureTime!,
-                expectedDepartureTime: $0.expectedDepartureTime!,
+        return decoded.data.stopPlace.estimatedCalls.compactMap { call -> JourneyPlannerArrivalData? in
+            guard let aimed = call.aimedDepartureTime,
+                      let expected = call.expectedDepartureTime,
+                      let aimedDepartureTime = formatter.date(from: aimed),
+                      let expectedDepartureTime = formatter.date(from: expected)
+            else { return nil }
+            
+            return JourneyPlannerArrivalData(
+                publicTransportNumber: call.serviceJourney.journeyPattern.line.publicCode,
+                finalDestination: call.destinationDisplay.frontText,
+                aimedDepartureTime: aimedDepartureTime,
+                expectedDepartureTime: expectedDepartureTime,
             )
         }
     }
