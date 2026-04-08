@@ -54,6 +54,14 @@ enum TransportType {
         case .metro: return "Metro"
         }
     }
+    
+    var sortOrder: Int {
+        switch self {
+        case .bus: return 0
+        case .tram: return 1
+        case .metro: return 2
+        }
+    }
 }
 
 enum QueryType {
