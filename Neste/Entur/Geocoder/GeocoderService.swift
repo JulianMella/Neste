@@ -11,7 +11,7 @@ struct GeocoderAutocomplete: RESTEndpoint {
     var baseUrl: String
 }
 
-final class GeocoderService {
+struct GeocoderService {
     let geocoderEndpoint = GeocoderAutocomplete(baseUrl: "https://api.entur.io/geocoder/v1/autocomplete?text=") // TODO: Convert this to URLComponents
     
     func autocomplete(query: String) async throws -> [GeocoderStop] {
@@ -33,13 +33,20 @@ final class GeocoderService {
             throw EndpointError.decodingError(error)
         }
         
-        // TODO: Handle empty list!
-        return decoded.features.map {
-            GeocoderStop(
-                id: $0.properties.id,
-                name: $0.properties.name,
-                county: $0.properties.county,
-                uniqueCategories: Set($0.properties.category)
+        return decoded.features.compactMap { call -> GeocoderStop? in
+            let transportTypeSet: Set<TransportType> = Set(call.properties.category.compactMap {
+                TransportType($0, queryType: .geocoder)
+            })
+            
+            guard !transportTypeSet.isEmpty else { return nil }
+            
+            let sortedTransportTypeArray = Array(transportTypeSet).sorted(by: {$0.sortOrder < $1.sortOrder})
+            
+            return GeocoderStop(
+                id: call.properties.id,
+                name: call.properties.name,
+                county: call.properties.county,
+                transportTypes: sortedTransportTypeArray
             )
         }
     }
