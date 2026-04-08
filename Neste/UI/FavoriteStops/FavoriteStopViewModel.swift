@@ -12,6 +12,9 @@ final class FavoriteStopViewModel {
     var favoritedStops: [FavoriteStop] = [] // TODO: Persistent consider init for just this case, everything else is just stored in memory!
     var arrivalData: [FavoriteStopChild : [JourneyPlannerArrivalData]] = [:]
     private let journeyPlannerService = JourneyPlannerService()
+    var hasData: Bool {
+        !favoritedStops.isEmpty
+    }
     
     private func index(of parent: GeocoderStop) -> Int? {
         favoritedStops.firstIndex(where: { $0.parentStop == parent })

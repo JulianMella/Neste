@@ -34,5 +34,6 @@ struct FavoriteStopsListView: View {
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .scrollIndicators(.never)
         }
+        .padding(.top, favoriteStopViewModel.hasData ? 16 : 0)
     }
 }
