@@ -24,61 +24,57 @@ struct StopSearchBar: View {
     }
     
     var body: some View {
-        VStack {
-            HStack(spacing: 8) {
-                Button {
-                    showStopSearch.toggle()
-                } label: {
-                    Image(systemName: "chevron.left")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(.white)
-                    .frame(width: 32, height: 32)
-                    .background(.white.opacity(0.08))
-                    .clipShape(Circle())
-                }
-                .buttonStyle(.plain)
-                
-                TextField(
-                    "􀊫 Search for your favorite stops",
-                    text: $autocompleteQuery
-                )
-                .textFieldStyle(.plain)
-                .font(.headline.weight(.semibold))
-                .focusEffectDisabled()
-                .focused($isSearchFocused)
-                .frame(maxWidth: .infinity, minHeight: 28)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 2.5)
+        HStack(spacing: 8) {
+            Button {
+                showStopSearch.toggle()
+            } label: {
+                Image(systemName: "chevron.left")
+                .font(.caption.weight(.bold))
+                .foregroundStyle(.white)
+                .frame(width: 32, height: 32)
                 .background(.white.opacity(0.08))
-                .clipShape(Capsule())
-                .contentShape(Capsule())
-                .onTapGesture {
-                    isSearchFocused = true
-                }
-                .onSubmit {
-                    Task {
-                        isSearchFocused = false
-                        await stopSearchViewModel.search(autocompleteQuery)
-                    }
-                }
-                
-                Button {
-                    Task {
-                        isSearchFocused = false
-                        await stopSearchViewModel.search(autocompleteQuery)
-                    }
-                } label: {
-                    Image(systemName: "magnifyingglass")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(.white)
-                    .frame(width: 32, height: 32)
-                    .background(.blue)
-                    .clipShape(Circle())
-                }
-                .buttonStyle(.plain)
+                .clipShape(Circle())
             }
+            .buttonStyle(.plain)
+            
+            TextField(
+                "􀊫 Search for your favorite stops",
+                text: $autocompleteQuery
+            )
+            .textFieldStyle(.plain)
+            .font(.headline.weight(.semibold))
+            .focusEffectDisabled()
+            .focused($isSearchFocused)
+            .frame(maxWidth: .infinity, minHeight: 28)
             .padding(.horizontal, 12)
-            .padding(.vertical, 10)
+            .padding(.vertical, 2.5)
+            .background(.white.opacity(0.08))
+            .clipShape(Capsule())
+            .contentShape(Capsule())
+            .onTapGesture {
+                isSearchFocused = true
+            }
+            .onSubmit {
+                Task {
+                    isSearchFocused = false
+                    await stopSearchViewModel.search(autocompleteQuery)
+                }
+            }
+            
+            Button {
+                Task {
+                    isSearchFocused = false
+                    await stopSearchViewModel.search(autocompleteQuery)
+                }
+            } label: {
+                Image(systemName: "magnifyingglass")
+                .font(.caption.weight(.bold))
+                .foregroundStyle(.white)
+                .frame(width: 32, height: 32)
+                .background(.blue)
+                .clipShape(Circle())
+            }
+            .buttonStyle(.plain)
         }
     }
 }

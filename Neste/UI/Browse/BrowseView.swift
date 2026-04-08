@@ -12,7 +12,7 @@ struct BrowseView: View {
     @State private var selectedTab = 0
     
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             HStack(spacing: 8) {
                 SegmentedPicker(
                     selection: $selectedTab,
@@ -37,9 +37,6 @@ struct BrowseView: View {
                 }
             }
             .animation(.easeOut(duration: 0.2), value: selectedTab)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
-
             Group {
                 switch selectedTab {
                 case 0: FavoriteStopsListView()

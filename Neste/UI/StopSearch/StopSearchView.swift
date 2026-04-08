@@ -13,17 +13,17 @@ struct StopSearchView: View {
     @Binding var showStopSearch: Bool
     
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             StopSearchBar(stopSearchViewModel: $stopSearchViewModel, isSearchFocused: $isSearchFocused, showStopSearch: $showStopSearch)
             
             if (!stopSearchViewModel.isLoading && stopSearchViewModel.searchResults.isEmpty) {
                 EmptyView()
             } else if (stopSearchViewModel.isLoading) {
                 PulsingDots()
+                    .padding(.top, 16)
             } else {
                 StopSearchList(searchResults: stopSearchViewModel.searchResults)
-                    .padding(.horizontal, 12)
-                    .padding(.bottom, 12)
+                    .padding(.top, 16)
             }
         }
         .contentShape(Rectangle())

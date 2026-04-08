@@ -12,6 +12,9 @@ final class FavoriteStopViewModel {
     var favoritedStops: [FavoriteStop] = [] // TODO: Persistent consider init for just this case, everything else is just stored in memory!
     var arrivalData: [FavoriteStopChild : [JourneyPlannerArrivalData]] = [:]
     private let journeyPlannerService = JourneyPlannerService()
+    var hasData: Bool {
+        !favoritedStops.isEmpty
+    }
     
     private func index(of parent: GeocoderStop) -> Int? {
         favoritedStops.firstIndex(where: { $0.parentStop == parent })
@@ -27,19 +30,11 @@ final class FavoriteStopViewModel {
         return nil
     }
     
-    func addFavorite(parent: GeocoderStop, hasChildrenIds: Bool, child: StopSearchResult.StopMetadata) async {
+    func addFavorite(parent: GeocoderStop, hasChildrenIds: Bool, child: StopSearchResult.StopMetadata) {
         if let parentIndex = index(of: parent) {
             favoritedStops[parentIndex].groupedStopMetadata[child.transportType, default: []].append(child)
         } else {
-            
             favoritedStops.append(FavoriteStop(parentStop: parent, hasChildrenIds: hasChildrenIds, groupedStopMetadata: [child.transportType : [child]]))
-        }
-        
-        // TODO: Remove...
-        if hasChildrenIds {
-            await fetchArrivalData(for: child)
-        } else {
-            await fetchArrivalData(for: parent)
         }
     }
     

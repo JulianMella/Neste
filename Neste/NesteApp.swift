@@ -16,6 +16,7 @@ struct NesteApp: App {
             ContentView()
                 .frame(minWidth: 450, maxHeight: 350)
                 .fixedSize(horizontal: false, vertical: true)
+                .padding(12)
         }
         .menuBarExtraStyle(.window)
     }
