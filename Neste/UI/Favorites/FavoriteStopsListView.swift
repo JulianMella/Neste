@@ -17,7 +17,7 @@ struct FavoriteStopsListView: View {
     var body: some View {
         ScrollView {
             VStack {
-                ForEach(favoriteStopViewModel.favoritedStops, id: \.self) { stop in
+                ForEach(favoriteStopViewModel.favoritedStops, id: \.parentStop.id) { stop in
                     FavoriteStopView(stop: stop, viewModel: favoriteStopViewModel)
                 }
             }
