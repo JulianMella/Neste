@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+// TODO: Make search bar generalized for RouteSearch, make magnifying glass permanent, consider x button on write, search button unclickable and grey until person writes something, consider instant focus on enter view
+
 struct StopSearchBar: View {
     @Binding var stopSearchViewModel: StopSearchViewModel
     @FocusState.Binding var isSearchFocused: Bool
@@ -35,30 +37,29 @@ struct StopSearchBar: View {
                     .clipShape(Circle())
                 }
                 .buttonStyle(.plain)
-                ZStack {
-                    TextField(
-                        "􀊫 Search for your favorite stops",
-                        text: $autocompleteQuery
-                    )
-                    .focusEffectDisabled()
-                    .focused($isSearchFocused)
-                    .textFieldStyle(.plain)
-                    .font(.headline.weight(.semibold))
-                    .onSubmit {
-                        Task {
-                            isSearchFocused = false
-                            await stopSearchViewModel.search(autocompleteQuery)
-                        }
-                    }
-                }
+                
+                TextField(
+                    "􀊫 Search for your favorite stops",
+                    text: $autocompleteQuery
+                )
+                .textFieldStyle(.plain)
+                .font(.headline.weight(.semibold))
+                .focusEffectDisabled()
+                .focused($isSearchFocused)
                 .frame(maxWidth: .infinity, minHeight: 28)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 2.5)
                 .background(.white.opacity(0.08))
                 .clipShape(Capsule())
-                .pointerStyle(.horizontalText)
+                .contentShape(Capsule())
                 .onTapGesture {
                     isSearchFocused = true
+                }
+                .onSubmit {
+                    Task {
+                        isSearchFocused = false
+                        await stopSearchViewModel.search(autocompleteQuery)
+                    }
                 }
                 
                 Button {
