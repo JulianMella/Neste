@@ -9,17 +9,34 @@
 /* Begin PBXBuildFile section */
 		F0058E3D2F7B64F200F8E395 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F0058E3C2F7B64F200F8E395 /* README.md */; };
 		F0A774912F7ABB9A00B5FE2B /* Project Spec.md in Resources */ = {isa = PBXBuildFile; fileRef = F0A7748F2F7ABB9500B5FE2B /* Project Spec.md */; };
+		F0E9072E2F86079B002700A9 /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F0E9072D2F86079B002700A9 /* Secrets.xcconfig */; };
+		F0E907302F8607A6002700A9 /* Secretstemplate.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F0E9072F2F8607A6002700A9 /* Secretstemplate.xcconfig */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		F0058E3C2F7B64F200F8E395 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		F0A774782F7AAF2300B5FE2B /* Neste.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Neste.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0A7748F2F7ABB9500B5FE2B /* Project Spec.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Project Spec.md"; sourceTree = "<group>"; };
+		F0E9072D2F86079B002700A9 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
+		F0E9072F2F8607A6002700A9 /* Secretstemplate.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secretstemplate.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		F0E143302F8606E70000CE96 /* Exceptions for "Neste" folder in "Neste" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = F0A774772F7AAF2300B5FE2B /* Neste */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		F0A7747A2F7AAF2300B5FE2B /* Neste */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				F0E143302F8606E70000CE96 /* Exceptions for "Neste" folder in "Neste" target */,
+			);
 			path = Neste;
 			sourceTree = "<group>";
 		};
@@ -43,6 +60,8 @@
 				F0A774792F7AAF2300B5FE2B /* Products */,
 				F0A7748F2F7ABB9500B5FE2B /* Project Spec.md */,
 				F0058E3C2F7B64F200F8E395 /* README.md */,
+				F0E9072D2F86079B002700A9 /* Secrets.xcconfig */,
+				F0E9072F2F8607A6002700A9 /* Secretstemplate.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -64,6 +83,7 @@
 				F0A774742F7AAF2300B5FE2B /* Sources */,
 				F0A774752F7AAF2300B5FE2B /* Frameworks */,
 				F0A774762F7AAF2300B5FE2B /* Resources */,
+				F0E1432E2F8606B70000CE96 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -124,10 +144,32 @@
 			files = (
 				F0058E3D2F7B64F200F8E395 /* README.md in Resources */,
 				F0A774912F7ABB9A00B5FE2B /* Project Spec.md in Resources */,
+				F0E9072E2F86079B002700A9 /* Secrets.xcconfig in Resources */,
+				F0E907302F8607A6002700A9 /* Secretstemplate.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		F0E1432E2F8606B70000CE96 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ -z \"${ET_CLIENT_NAME}\" ]; then\n    echo \"error: ET_CLIENT_NAME not set. Copy Secrets.xcconfig.template to Secrets.xcconfig and fill in your values.\"\n    exit 1\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		F0A774742F7AAF2300B5FE2B /* Sources */ = {
@@ -142,6 +184,7 @@
 /* Begin XCBuildConfiguration section */
 		F0A774832F7AAF2400B5FE2B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F0E9072D2F86079B002700A9 /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -207,6 +250,7 @@
 		};
 		F0A774842F7AAF2400B5FE2B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F0E9072D2F86079B002700A9 /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -264,6 +308,7 @@
 		};
 		F0A774862F7AAF2400B5FE2B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F0E9072D2F86079B002700A9 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -286,6 +331,7 @@
 				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
 				ENABLE_RESOURCE_ACCESS_USB = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Neste/Info.plist;
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -308,6 +354,7 @@
 		};
 		F0A774872F7AAF2400B5FE2B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F0E9072D2F86079B002700A9 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -330,6 +377,7 @@
 				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
 				ENABLE_RESOURCE_ACCESS_USB = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Neste/Info.plist;
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
