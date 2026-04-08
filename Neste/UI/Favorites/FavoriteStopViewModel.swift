@@ -17,7 +17,7 @@ final class FavoriteStopViewModel {
         favoritedStops.firstIndex(where: { $0.parentStop == parent })
     }
     
-    private func keyAndIndex(of child: AddFavoritesResult.StopMetadata, in parentIndex: Int) -> (TransportType, Int)? {
+    private func keyAndIndex(of child: StopSearchResult.StopMetadata, in parentIndex: Int) -> (TransportType, Int)? {
         for (type, metadata) in favoritedStops[parentIndex].groupedStopMetadata {
             if let index = metadata.firstIndex(where: { $0 == child }) {
                 return (type, index)
@@ -27,7 +27,7 @@ final class FavoriteStopViewModel {
         return nil
     }
     
-    func addFavorite(parent: GeocoderStop, hasChildrenIds: Bool, child: AddFavoritesResult.StopMetadata) async {
+    func addFavorite(parent: GeocoderStop, hasChildrenIds: Bool, child: StopSearchResult.StopMetadata) async {
         if let parentIndex = index(of: parent) {
             favoritedStops[parentIndex].groupedStopMetadata[child.transportType, default: []].append(child)
         } else {
@@ -43,7 +43,7 @@ final class FavoriteStopViewModel {
         }
     }
     
-    func deleteFavorite(parent: GeocoderStop, child: AddFavoritesResult.StopMetadata) {
+    func deleteFavorite(parent: GeocoderStop, child: StopSearchResult.StopMetadata) {
         if let parentIndex = index(of: parent) {
             if let childKeyAndIndex = keyAndIndex(of: child, in: parentIndex) {
                             // Keep compiler happy with "?", at this point it is safely confirmed that child exists.
@@ -62,19 +62,19 @@ final class FavoriteStopViewModel {
         }
     }
     
-    func contains(child: AddFavoritesResult.StopMetadata, in parent: GeocoderStop) -> Bool {
+    func contains(child: StopSearchResult.StopMetadata, in parent: GeocoderStop) -> Bool {
         guard let parentIndex = index(of: parent) else { return false }
         
         return keyAndIndex(of: child, in: parentIndex) != nil
     }
     
-    func getChildrenOf(_ parent: GeocoderStop) -> [AddFavoritesResult.StopMetadata] {
+    func getChildrenOf(_ parent: GeocoderStop) -> [StopSearchResult.StopMetadata] {
         guard let parentIndex = index(of: parent) else { return [] }
         
         return favoritedStops[parentIndex].groupedStopMetadata.values.flatMap { $0 }
     }
     
-    // Called when AddFavoritesResult.hasChildrenIds == false
+    // Called when StopSearchResult.hasChildrenIds == false
     func fetchArrivalData(for parent: GeocoderStop) async {
         do {
             /*isLoading = true TODO: Create isLoading array for each individual item that can be loaded.
@@ -114,7 +114,7 @@ final class FavoriteStopViewModel {
         }
     }
     
-    func fetchArrivalData(for child: AddFavoritesResult.StopMetadata) async {
+    func fetchArrivalData(for child: StopSearchResult.StopMetadata) async {
         do {
             /*isLoading = true TODO: Create isLoading array for each individual item that can be loaded.
              
@@ -136,7 +136,7 @@ final class FavoriteStopViewModel {
         }
     }
     
-    func fetchArrivalData(for children: [AddFavoritesResult.StopMetadata]) async {
+    func fetchArrivalData(for children: [StopSearchResult.StopMetadata]) async {
         do {
             /*isLoading = true TODO: Create isLoading array for each individual item that can be loaded.
              

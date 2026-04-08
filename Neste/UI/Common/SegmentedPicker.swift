@@ -2,7 +2,7 @@
 //  SegmentedPicker.swift
 //  Neste
 //
-//  Created by Julian on 03/04/2026.
+//  Created by Julian on 08/04/2026.
 //
 
 import SwiftUI

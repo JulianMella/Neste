@@ -8,14 +8,14 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var favoriteStopViewModel = FavoriteStopViewModel()
-    @State private var showAddFavorites = false
+    @State private var showStopSearch = false
     
     var body: some View {
-        if showAddFavorites {
-            AddFavoritesView(showAddFavorites: $showAddFavorites)
+        if showStopSearch {
+            StopSearchView(showStopSearch: $showStopSearch)
                 .environment(favoriteStopViewModel)
         } else {
-            BrowseView(showAddFavorites: $showAddFavorites)
+            BrowseView(showStopSearch: $showStopSearch)
                 .environment(favoriteStopViewModel)
         }
     }

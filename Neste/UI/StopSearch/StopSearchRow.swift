@@ -1,5 +1,5 @@
 //
-//  AddFavoritesStopView.swift
+//  StopSearchRow.swift
 //  Neste
 //
 //  Created by Julian on 05/04/2026.
@@ -9,22 +9,22 @@
 
 import SwiftUI
 
-struct AddFavoritesStopView: View {
-    let addFavoritesResult: AddFavoritesResult
+struct StopSearchRow: View {
+    let stopSearchResult: StopSearchResult
     @Binding var hoveredStopID: String?
     @Binding var stopIDClicked: String?
     let proxy: ScrollViewProxy
     
     var parentId: String {
-        addFavoritesResult.parentStop.id
+        stopSearchResult.parentStop.id
     }
     
     var parentName: String {
-        addFavoritesResult.parentStop.name
+        stopSearchResult.parentStop.name
     }
     
     var transportTypes: [TransportType] {
-        addFavoritesResult.parentStop.transportTypes
+        stopSearchResult.parentStop.transportTypes
     }
 
     private var bottomRadius: CGFloat {
@@ -67,7 +67,7 @@ struct AddFavoritesStopView: View {
             .buttonStyle(.plain)
 
             if parentId == stopIDClicked {
-                ExpandedStopView(transportTypes: transportTypes, groupedStopMetadata: addFavoritesResult.groupedStopMetadata, parent: addFavoritesResult.parentStop, hasChildrenIds: addFavoritesResult.hasChildrenIds)
+                ExpandedStopView(transportTypes: transportTypes, groupedStopMetadata: stopSearchResult.groupedStopMetadata, parent: stopSearchResult.parentStop, hasChildrenIds: stopSearchResult.hasChildrenIds)
                     .background(.white.opacity(0.08))
                     .clipShape(UnevenRoundedRectangle(topLeadingRadius: 0, bottomLeadingRadius: 12, bottomTrailingRadius: 12, topTrailingRadius: 0))
             }
@@ -79,7 +79,7 @@ struct AddFavoritesStopView: View {
 
 struct ExpandedStopView: View {
     let transportTypes: [TransportType]
-    let groupedStopMetadata: [TransportType: [AddFavoritesResult.StopMetadata]]
+    let groupedStopMetadata: [TransportType: [StopSearchResult.StopMetadata]]
     let parent: GeocoderStop
     let hasChildrenIds: Bool
     @State private var selectedTab = 0
@@ -111,7 +111,7 @@ struct ExpandedStopView: View {
 
 struct StopMetadataRow: View {
     @Environment(FavoriteStopViewModel.self) private var favoriteStopViewModel
-    let stop: AddFavoritesResult.StopMetadata
+    let stop: StopSearchResult.StopMetadata
     let hasChildrenIds: Bool
     let parent: GeocoderStop
     var isFavorited: Bool { favoriteStopViewModel.contains(child: stop, in: parent) }

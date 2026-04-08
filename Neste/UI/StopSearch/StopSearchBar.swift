@@ -1,5 +1,5 @@
 //
-//  AddFavoritesSearchBar.swift
+//  StopSearchBar.swift
 //  Neste
 //
 //  Created by Julian on 04/04/2026.
@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct AddFavoritesSearchBar: View {
-    @Binding var addFavoritesViewModel: AddFavoritesViewModel
+struct StopSearchBar: View {
+    @Binding var stopSearchViewModel: StopSearchViewModel
     @FocusState.Binding var isSearchFocused: Bool
-    @Binding var showAddFavorites: Bool
+    @Binding var showStopSearch: Bool
     
     @State var autocompleteQuery: String = ""
     
@@ -25,7 +25,7 @@ struct AddFavoritesSearchBar: View {
         VStack {
             HStack(spacing: 8) {
                 Button {
-                    showAddFavorites.toggle()
+                    showStopSearch.toggle()
                 } label: {
                     Image(systemName: "chevron.left")
                     .font(.caption.weight(.bold))
@@ -47,7 +47,7 @@ struct AddFavoritesSearchBar: View {
                     .onSubmit {
                         Task {
                             isSearchFocused = false
-                            await addFavoritesViewModel.search(autocompleteQuery)
+                            await stopSearchViewModel.search(autocompleteQuery)
                         }
                     }
                 }
@@ -64,7 +64,7 @@ struct AddFavoritesSearchBar: View {
                 Button {
                     Task {
                         isSearchFocused = false
-                        await addFavoritesViewModel.search(autocompleteQuery)
+                        await stopSearchViewModel.search(autocompleteQuery)
                     }
                 } label: {
                     Image(systemName: "magnifyingglass")
@@ -79,27 +79,5 @@ struct AddFavoritesSearchBar: View {
             .padding(.horizontal, 12)
             .padding(.vertical, 10)
         }
-    }
-}
-
-struct PulsingDots: View {
-    @State private var isAnimating = false
-
-    var body: some View {
-        HStack(spacing: 8) {
-            ForEach(0..<3, id: \.self) { i in
-                Circle()
-                    .frame(width: 10, height: 10)
-                    .scaleEffect(isAnimating ? 1 : 0.5)
-                    .animation(
-                        .easeInOut(duration: 0.6)
-                        .repeatForever(autoreverses: true)
-                        .delay(Double(i) * 0.2),
-                        value: isAnimating
-                    )
-            }
-        }
-        .onAppear { isAnimating = true }
-        .padding(.bottom, 12)
     }
 }

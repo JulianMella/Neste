@@ -1,5 +1,5 @@
 //
-//  AddFavoritesListView.swift
+//  StopSearchList.swift
 //  Neste
 //
 //  Created by Julian on 04/04/2026.
@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct AddFavoritesListView: View {
-    var searchResults: [AddFavoritesResult]
+struct StopSearchList: View {
+    var searchResults: [StopSearchResult]
     @State private var hoveredStopID: String?
     @State private var stopIDClicked: String?
     
@@ -16,8 +16,8 @@ struct AddFavoritesListView: View {
         ScrollViewReader { proxy in
             ScrollView {
                 ForEach(searchResults, id: \.parentStop) { result in
-                    AddFavoritesStopView(
-                        addFavoritesResult: result,
+                    StopSearchRow(
+                        stopSearchResult: result,
                         hoveredStopID: $hoveredStopID,
                         stopIDClicked: $stopIDClicked,
                         proxy: proxy

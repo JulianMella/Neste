@@ -1,11 +1,11 @@
 //
-//  AddFavoritesResult.swift
+//  StopSearchResult.swift
 //  Neste
 //
 //  Created by Julian on 05/04/2026.
 //
 
-struct AddFavoritesResult {
+struct StopSearchResult {
     let parentStop: GeocoderStop
     let hasChildrenIds: Bool
     var groupedStopMetadata: [TransportType : [StopMetadata]]
@@ -18,5 +18,5 @@ struct AddFavoritesResult {
     }
 }
 
-typealias FavoriteStop = AddFavoritesResult
-typealias FavoriteStopChild = AddFavoritesResult.StopMetadata
+typealias FavoriteStop = StopSearchResult
+typealias FavoriteStopChild = StopSearchResult.StopMetadata
