@@ -15,11 +15,9 @@ struct AddFavoritesListView: View {
     var body: some View {
         ScrollViewReader { proxy in
             ScrollView {
-                ForEach(searchResults, id: \.self) { result in
+                ForEach(searchResults, id: \.parentStop) { result in
                     AddFavoritesStopView(
-                        parentStopMetadata: result.parentStop,
-                        hasChildrenIds: result.hasChildrenIds,
-                        expandedStopMetadata: result.stopMetadata,
+                        addFavoritesResult: result,
                         hoveredStopID: $hoveredStopID,
                         stopIDClicked: $stopIDClicked,
                         proxy: proxy
