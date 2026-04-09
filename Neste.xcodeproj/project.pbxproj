@@ -11,6 +11,7 @@
 		F0A774912F7ABB9A00B5FE2B /* Project Spec.md in Resources */ = {isa = PBXBuildFile; fileRef = F0A7748F2F7ABB9500B5FE2B /* Project Spec.md */; };
 		F0E9072E2F86079B002700A9 /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F0E9072D2F86079B002700A9 /* Secrets.xcconfig */; };
 		F0E907302F8607A6002700A9 /* Secretstemplate.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F0E9072F2F8607A6002700A9 /* Secretstemplate.xcconfig */; };
+		F0E907CE2F876F55002700A9 /* NesteIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = F0E907CD2F876F55002700A9 /* NesteIcon.icon */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +20,7 @@
 		F0A7748F2F7ABB9500B5FE2B /* Project Spec.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Project Spec.md"; sourceTree = "<group>"; };
 		F0E9072D2F86079B002700A9 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		F0E9072F2F8607A6002700A9 /* Secretstemplate.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secretstemplate.xcconfig; sourceTree = "<group>"; };
+		F0E907CD2F876F55002700A9 /* NesteIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = NesteIcon.icon; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -56,6 +58,7 @@
 		F0A7746F2F7AAF2300B5FE2B = {
 			isa = PBXGroup;
 			children = (
+				F0E907CD2F876F55002700A9 /* NesteIcon.icon */,
 				F0A7747A2F7AAF2300B5FE2B /* Neste */,
 				F0A774792F7AAF2300B5FE2B /* Products */,
 				F0A7748F2F7ABB9500B5FE2B /* Project Spec.md */,
@@ -144,6 +147,7 @@
 			files = (
 				F0058E3D2F7B64F200F8E395 /* README.md in Resources */,
 				F0A774912F7ABB9A00B5FE2B /* Project Spec.md in Resources */,
+				F0E907CE2F876F55002700A9 /* NesteIcon.icon in Resources */,
 				F0E9072E2F86079B002700A9 /* Secrets.xcconfig in Resources */,
 				F0E907302F8607A6002700A9 /* Secretstemplate.xcconfig in Resources */,
 			);
