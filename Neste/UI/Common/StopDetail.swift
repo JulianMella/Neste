@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct StopDetail: View {
+    @Environment(FavoriteStopViewModel.self) private var favoriteStopViewModel
     let transportTypes: [TransportType]
     let stopSearchResult: StopSearchResult
     let stopRowType: StopRowType
@@ -35,9 +36,28 @@ struct StopDetail: View {
                 }
                 .onAppear {
                     if stopRowType == .favoriteStop {
+                        Task {
+                            await favoriteStopViewModel.loadArrivals(for: stopSearchResult, in: transportTypes[selectedTab])
+                        }
                         // TODO: clean up data (remove stale data)
                         
                         // TODO: refetch more data
+                        
+                    }
+                    
+                    else if stopRowType == .stopSearch {
+                        // TODO: load data for this specific tab
+                    }
+                }
+                .onChange(of: selectedTab) {
+                    if stopRowType == .favoriteStop {
+                        Task {
+                            await favoriteStopViewModel.loadArrivals(for: stopSearchResult, in: transportTypes[selectedTab])
+                        }
+                        // TODO: clean up data (remove stale data)
+                        
+                        // TODO: refetch more data
+                        
                     }
                     
                     else if stopRowType == .stopSearch {
