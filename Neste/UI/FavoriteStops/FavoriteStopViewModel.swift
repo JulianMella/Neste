@@ -30,23 +30,61 @@ final class FavoriteStopViewModel {
         return nil
     }
     
+    // Bit of a verbose function name. Essentially, this function finds the key and index for a specific child and confirms
+    // whether or not it is the only child holding that key.
+    private func keyIndexAndIsUniqueNsr(of child: StopSearchResult.StopMetadata, in parentIndex: Int) -> (TransportType, Int, Bool)? {
+        var tType: TransportType? = nil
+        var childIndex: Int? = nil
+        var isUniqueNsr: Bool = true
+        
+        for (type, metadata) in favoritedStops[parentIndex].groupedStopMetadata {
+            for i in 0..<metadata.count {
+                if metadata[i] == child {
+                    tType = type
+                    childIndex = i
+                }
+                
+                if metadata[i] != child && metadata[i].id == child.id {
+                    isUniqueNsr = false
+                }
+            }
+        }
+        
+        guard let tType = tType, let childIndex = childIndex else { return nil }
+        
+        return (tType, childIndex, isUniqueNsr)
+    }
+    
     func addFavorite(parent: GeocoderStop, hasChildrenIds: Bool, child: StopSearchResult.StopMetadata) {
         if let parentIndex = index(of: parent) {
             favoritedStops[parentIndex].groupedStopMetadata[child.transportType, default: []].append(child)
+            
+            if hasChildrenIds {
+                favoritedStops[parentIndex].uniqueNsrStrings.insert(child.id)
+            }
+            
         } else {
-            favoritedStops.append(FavoriteStop(parentStop: parent, hasChildrenIds: hasChildrenIds, groupedStopMetadata: [child.transportType : [child]]))
+            var newFavoriteStop = FavoriteStop(parentStop: parent, hasChildrenIds: hasChildrenIds, groupedStopMetadata: [child.transportType : [child]])
+            
+            if hasChildrenIds {
+                newFavoriteStop.uniqueNsrStrings.insert(child.id)
+            }
+            
+            favoritedStops.append(newFavoriteStop)
         }
     }
     
     func deleteFavorite(parent: GeocoderStop, child: StopSearchResult.StopMetadata) {
         if let parentIndex = index(of: parent) {
-            if let childKeyAndIndex = keyAndIndex(of: child, in: parentIndex) {
-                            // Keep compiler happy with "?", at this point it is safely confirmed that child exists.
-                favoritedStops[parentIndex].groupedStopMetadata[childKeyAndIndex.0]?.remove(at: childKeyAndIndex.1)
-            }
-            
-            if favoritedStops[parentIndex].groupedStopMetadata.values.allSatisfy({ $0.isEmpty }) {
-                favoritedStops.remove(at: parentIndex)
+            if let childKeyAndIndexAndNsrUniqueness = keyIndexAndIsUniqueNsr(of: child, in: parentIndex) {
+                                                                // Keep compiler happy with "?", at this point it is safely confirmed that child exists.
+                favoritedStops[parentIndex].groupedStopMetadata[childKeyAndIndexAndNsrUniqueness.0]?.remove(at: childKeyAndIndexAndNsrUniqueness.1)
+                
+                if favoritedStops[parentIndex].groupedStopMetadata.values.allSatisfy({ $0.isEmpty }) {
+                    favoritedStops.remove(at: parentIndex)
+                } else if childKeyAndIndexAndNsrUniqueness.2 {
+                    favoritedStops[parentIndex].uniqueNsrStrings.remove(child.id)
+                }
             }
         }
     }

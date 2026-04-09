@@ -9,6 +9,7 @@ struct StopSearchResult {
     let parentStop: GeocoderStop
     let hasChildrenIds: Bool
     var groupedStopMetadata: [TransportType : [StopMetadata]]
+    var uniqueNsrStrings: Set<String> = Set()
     
     struct StopMetadata: Hashable {
         let id: String
