@@ -131,9 +131,10 @@ struct StopLineRow: View {
                 }
             }
         }
+        .contentShape(Rectangle())
         .contextMenu {
             if stopRowType == .favoriteStop {
-                Button("Delete child") {
+                Button("Delete \(stop.finalDestination)") {
                     favoriteStopViewModel.deleteFavorite(parent: parent, child: stop) // TODO: Better naming
                 }
             }
