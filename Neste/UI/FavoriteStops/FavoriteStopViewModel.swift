@@ -20,10 +20,10 @@ final class FavoriteStopViewModel {
         favoritedStops.firstIndex(where: { $0.parentStop == parent })
     }
     
-    private func keyAndIndex(of child: StopSearchResult.StopMetadata, in parentIndex: Int) -> (TransportType, Int)? {
+    private func keyAndIndex(of child: StopSearchResult.StopMetadata, in parentIndex: Int) -> KeyIndex? {
         for (type, metadata) in favoritedStops[parentIndex].groupedStopMetadata {
             if let index = metadata.firstIndex(where: { $0 == child }) {
-                return (type, index)
+                return KeyIndex(key: type, index: index)
             }
         }
         
@@ -32,7 +32,7 @@ final class FavoriteStopViewModel {
     
     // Bit of a verbose function name. Essentially, this function finds the key and index for a specific child and confirms
     // whether or not it is the only child holding that key.
-    private func keyIndexAndIsUniqueNsr(of child: StopSearchResult.StopMetadata, in parentIndex: Int) -> (TransportType, Int, Bool)? {
+    private func keyIndexAndIsUniqueNsr(of child: StopSearchResult.StopMetadata, in parentIndex: Int) -> KeyIndexUniqueNSR? {
         var tType: TransportType? = nil
         var childIndex: Int? = nil
         var isUniqueNsr: Bool = true
@@ -52,7 +52,7 @@ final class FavoriteStopViewModel {
         
         guard let tType = tType, let childIndex = childIndex else { return nil }
         
-        return (tType, childIndex, isUniqueNsr)
+        return KeyIndexUniqueNSR(keyIndex: KeyIndex(key: tType, index: childIndex), isUniqueNsr: isUniqueNsr)
     }
     
     func addFavorite(parent: GeocoderStop, hasChildrenIds: Bool, child: StopSearchResult.StopMetadata) {
@@ -60,14 +60,14 @@ final class FavoriteStopViewModel {
             favoritedStops[parentIndex].groupedStopMetadata[child.transportType, default: []].append(child)
             
             if hasChildrenIds {
-                favoritedStops[parentIndex].uniqueNsrStrings.insert(child.id)
+                favoritedStops[parentIndex].uniqueNsrStrings[child.transportType, default: []].insert(child.id)
             }
             
         } else {
             var newFavoriteStop = FavoriteStop(parentStop: parent, hasChildrenIds: hasChildrenIds, groupedStopMetadata: [child.transportType : [child]])
             
             if hasChildrenIds {
-                newFavoriteStop.uniqueNsrStrings.insert(child.id)
+                newFavoriteStop.uniqueNsrStrings[child.transportType, default: []].insert(child.id)
             }
             
             favoritedStops.append(newFavoriteStop)
@@ -76,14 +76,14 @@ final class FavoriteStopViewModel {
     
     func deleteFavorite(parent: GeocoderStop, child: StopSearchResult.StopMetadata) {
         if let parentIndex = index(of: parent) {
-            if let childKeyAndIndexAndNsrUniqueness = keyIndexAndIsUniqueNsr(of: child, in: parentIndex) {
+            if let keyIndexUniqueNSR = keyIndexAndIsUniqueNsr(of: child, in: parentIndex) {
                                                                 // Keep compiler happy with "?", at this point it is safely confirmed that child exists.
-                favoritedStops[parentIndex].groupedStopMetadata[childKeyAndIndexAndNsrUniqueness.0]?.remove(at: childKeyAndIndexAndNsrUniqueness.1)
+                favoritedStops[parentIndex].groupedStopMetadata[keyIndexUniqueNSR.keyIndex.key]?.remove(at: keyIndexUniqueNSR.keyIndex.index)
                 
                 if favoritedStops[parentIndex].groupedStopMetadata.values.allSatisfy({ $0.isEmpty }) {
                     favoritedStops.remove(at: parentIndex)
-                } else if childKeyAndIndexAndNsrUniqueness.2 {
-                    favoritedStops[parentIndex].uniqueNsrStrings.remove(child.id)
+                } else if keyIndexUniqueNSR.isUniqueNsr {
+                    favoritedStops[parentIndex].uniqueNsrStrings[keyIndexUniqueNSR.keyIndex.key]?.remove(child.id)
                 }
             }
         }
@@ -107,17 +107,15 @@ final class FavoriteStopViewModel {
         return favoritedStops[parentIndex].groupedStopMetadata.values.flatMap { $0 }
     }
     
-    func fetchArrivalData(for stop: StopSearchResult) async {
+    func fetchArrivalData(for stop: StopSearchResult, in transportType: TransportType) async {
         if !stop.hasChildrenIds {
             await fetchArrivalData(for: stop.parentStop)
         } else {
-            for (_, children) in stop.groupedStopMetadata {
-                
-                // TODO: One of the big issues with this design is the fact that many of the children might share the same NSR:StopPlace:ID and therefore would make multiple calls for the exact same dataset. Therefore this must be redesigned such that the fetchArrivalData func receives a Set of NSR strings based upon the children NSR strings. Where should the set of NSR strings be created  . .. .. ...........   ????????????????????????
-                
-                for child in children {
-                    await fetchArrivalData(for: child, in: stop.parentStop)
-                }
+            guard let children = stop.groupedStopMetadata[transportType],
+                  let nsrStrings = stop.uniqueNsrStrings[transportType] else { return }
+            
+            for child in children {
+                await fetchArrivalData(for: child, in: transportType, using: nsrStrings)
             }
         }
     }
@@ -166,7 +164,7 @@ final class FavoriteStopViewModel {
         }
     }
     
-    func fetchArrivalData(for child: StopSearchResult.StopMetadata, in parent: GeocoderStop) async {
+    func fetchArrivalData(for child: StopSearchResult.StopMetadata, in transportTye: TransportType, using uniqueNsrStrings: Set<String>) async {
         do {
             /*isLoading = true TODO: Create isLoading array for each individual item that can be loaded.
              
@@ -176,7 +174,7 @@ final class FavoriteStopViewModel {
             
             let arrivals = try await journeyPlannerService.fetchLiveArrivalData(stopPlaceID: child.id)
             
-            guard let parentIdx = index(of: parent) else {
+            /*guard let parentIdx = index(of: parent) else {
                 print("Could not find parent") // TODO: Handle this xd...
                 return
             }
@@ -194,7 +192,7 @@ final class FavoriteStopViewModel {
                 }
                 
                 arrivalData[match, default: []].append(arrival)
-            }
+            }*/
             
         } catch EndpointError.networkError(let URLError) {
             // TODO: Handle this
@@ -208,4 +206,14 @@ final class FavoriteStopViewModel {
     }
     
      // UpdateArrivalData, when the amount of arrival data goes down to four for a certain nsr stop place, call fetchArrivalData from the point in time of the last arrival data that we have and get 4 queries!
+}
+
+struct KeyIndex {
+    var key: TransportType
+    var index: Int
+}
+
+struct KeyIndexUniqueNSR {
+    var keyIndex: KeyIndex
+    var isUniqueNsr: Bool
 }
