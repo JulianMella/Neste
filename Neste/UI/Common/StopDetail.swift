@@ -117,13 +117,12 @@ struct StopLineRow: View {
             }
             
             else if stopRowType == .favoriteStop {
-                                                // TODO: This is not valid for all cases, such as late in night where only 1, 2 or 3 transport goes. - fix
-                if let arrivals = favoriteStopViewModel.arrivalData[stop], arrivals.count > 3 {
+                if let arrivals = favoriteStopViewModel.arrivalData[stop], arrivals.count > 1 {
                     Text(formatter.string(from: arrivals[0].aimedDepartureTime))
                     .font(.system(size: 16))
                     
                     HStack {
-                        ForEach(1..<4, id: \.self) { i in
+                        ForEach(1..<(arrivals.count < 4 ? arrivals.count : 4), id: \.self) { i in
                             Text(formatter.string(from: arrivals[i].aimedDepartureTime))
                                 .foregroundStyle(.gray)
                                 .frame(width: 45, alignment: .trailing)
