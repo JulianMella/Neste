@@ -24,9 +24,25 @@ struct StopDetail: View {
                 SegmentedPicker(selection: $selectedTab, items: pickerItems)
                 .frame(maxWidth: 200)
             }
+            
+            // TODO: Entur discussion, consider adding a refresh button.
+            
             if let stopGroup = stopSearchResult.groupedStopMetadata[transportTypes[selectedTab]] {
-                ForEach(stopGroup, id: \.self) { child in
-                    StopLineRow(stop: child, hasChildrenIds: stopSearchResult.hasChildrenIds, parent: stopSearchResult.parentStop, stopRowType: stopRowType)
+                Group {
+                    ForEach(stopGroup, id: \.self) { child in
+                        StopLineRow(stop: child, hasChildrenIds: stopSearchResult.hasChildrenIds, parent: stopSearchResult.parentStop, stopRowType: stopRowType)
+                    }
+                }
+                .onAppear {
+                    if stopRowType == .favoriteStop {
+                        // TODO: clean up data (remove stale data)
+                        
+                        // TODO: refetch more data
+                    }
+                    
+                    else if stopRowType == .stopSearch {
+                        // TODO: load data for this specific tab
+                    }
                 }
             } else {
                 Text("No transportation found at this stop")
@@ -50,6 +66,8 @@ struct StopLineRow: View {
         f.dateFormat = "HH:mm"
         return f
     }()
+    
+    // TODO: Set up timer for each row respective to the amount of time left before the next item that is not prune data must update its text string
     
     var body: some View {
         HStack {
