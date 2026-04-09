@@ -66,7 +66,7 @@ struct StopRow: View {
                     }
                     .contextMenu{
                         if stopRowType == .favoriteStop {
-                            Button("Delete parent") {
+                            Button("Delete \(stopSearchResult.parentStop.name)") {
                                 favoriteStopViewModel.deleteParent(parent: stopSearchResult.parentStop) //TODO: Better naming
                             }
                         }
