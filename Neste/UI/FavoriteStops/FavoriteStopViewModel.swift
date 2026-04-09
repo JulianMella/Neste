@@ -107,22 +107,18 @@ final class FavoriteStopViewModel {
         return favoritedStops[parentIndex].groupedStopMetadata.values.flatMap { $0 }
     }
     
-    func fetchArrivalData(for stop: StopSearchResult, in transportType: TransportType) async {
+    func loadArrivals(for stop: StopSearchResult, in transportType: TransportType) async {
         if !stop.hasChildrenIds {
             await fetchArrivalData(for: stop.parentStop)
         } else {
-            guard let children = stop.groupedStopMetadata[transportType],
-                  let nsrStrings = stop.uniqueNsrStrings[transportType] else { return }
-            
-            for child in children {
-                await fetchArrivalData(for: child, in: transportType, using: nsrStrings)
-            }
+            await fetchArrivalData(for: stop, in: transportType)
         }
     }
     
     
     // Called when StopSearchResult.hasChildrenIds == false
-    func fetchArrivalData(for parent: GeocoderStop) async {
+    // In this case we do not care about transport type since everything shares the same data fetch query:)
+    private func fetchArrivalData(for parent: GeocoderStop) async {
         do {
             /*isLoading = true TODO: Create isLoading array for each individual item that can be loaded.
              
@@ -164,36 +160,33 @@ final class FavoriteStopViewModel {
         }
     }
     
-    func fetchArrivalData(for child: StopSearchResult.StopMetadata, in transportTye: TransportType, using uniqueNsrStrings: Set<String>) async {
+    private func fetchArrivalData(for stop: StopSearchResult, in transportType: TransportType) async {
         do {
             /*isLoading = true TODO: Create isLoading array for each individual item that can be loaded.
              
              defer {
              isLoading = false
              }*/
-            
-            let arrivals = try await journeyPlannerService.fetchLiveArrivalData(stopPlaceID: child.id)
-            
-            /*guard let parentIdx = index(of: parent) else {
-                print("Could not find parent") // TODO: Handle this xd...
+            guard let nsrStrings = stop.uniqueNsrStrings[transportType],
+                  let children = stop.groupedStopMetadata[transportType]
+            else {
                 return
             }
             
-            let allChildren = favoritedStops[parentIdx].groupedStopMetadata.values.flatMap { $0 }
-            
-            // Iterate through arrivals then children first, because the other way around would be more computationally expensive
-            for arrival in arrivals {
-                guard let match = allChildren.first(where: {
-                    arrival.finalDestination == $0.finalDestination &&
-                    arrival.publicTransportNumber == $0.publicTransportNumber
-                })
-                else {
-                    continue // TODO: Although highly improbable, child might not exist, which should be communicated
-                }
+            for nsrString in nsrStrings {
+                let arrivals = try await journeyPlannerService.fetchLiveArrivalData(stopPlaceID: nsrString)
                 
-                arrivalData[match, default: []].append(arrival)
-            }*/
-            
+                for arrival in arrivals {
+                    guard let match = children.first(where: {
+                        arrival.finalDestination == $0.finalDestination &&
+                        arrival.publicTransportNumber == $0.publicTransportNumber
+                    }) else {
+                        continue
+                    }
+                    
+                    arrivalData[match, default: []].append(arrival)
+                }
+            }
         } catch EndpointError.networkError(let URLError) {
             // TODO: Handle this
         } catch EndpointError.httpError(let statusCode) {
