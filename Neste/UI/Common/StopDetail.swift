@@ -36,13 +36,16 @@ struct StopDetail: View {
                 }
                 .onAppear {
                     if stopRowType == .favoriteStop {
-                        Task {
-                            await favoriteStopViewModel.loadArrivals(for: stopSearchResult, in: transportTypes[selectedTab])
+                        let needsInitialFetch = stopGroup.allSatisfy { !favoriteStopViewModel.hasData(for: $0)}
+                        
+                        if needsInitialFetch {
+                            print("Needs initial fetch")
+                            Task {
+                                await favoriteStopViewModel.loadArrivals(for: stopSearchResult, in: transportTypes[selectedTab])
+                            }
+                        } else {
+                            favoriteStopViewModel.deleteStaleData(for: stopGroup)
                         }
-                        // TODO: clean up data (remove stale data)
-                        
-                        // TODO: refetch more data
-                        
                     }
                     
                     else if stopRowType == .stopSearch {
@@ -51,13 +54,16 @@ struct StopDetail: View {
                 }
                 .onChange(of: selectedTab) {
                     if stopRowType == .favoriteStop {
-                        Task {
-                            await favoriteStopViewModel.loadArrivals(for: stopSearchResult, in: transportTypes[selectedTab])
+                        let needsInitialFetch = stopGroup.allSatisfy { !favoriteStopViewModel.hasData(for: $0)}
+                        
+                        if needsInitialFetch {
+                            print("Needs initial fetch")
+                            Task {
+                                await favoriteStopViewModel.loadArrivals(for: stopSearchResult, in: transportTypes[selectedTab])
+                            }
+                        } else {
+                            favoriteStopViewModel.deleteStaleData(for: stopGroup)
                         }
-                        // TODO: clean up data (remove stale data)
-                        
-                        // TODO: refetch more data
-                        
                     }
                     
                     else if stopRowType == .stopSearch {
