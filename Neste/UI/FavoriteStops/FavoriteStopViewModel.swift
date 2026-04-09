@@ -69,6 +69,22 @@ final class FavoriteStopViewModel {
         return favoritedStops[parentIndex].groupedStopMetadata.values.flatMap { $0 }
     }
     
+    func fetchArrivalData(for stop: StopSearchResult) async {
+        if !stop.hasChildrenIds {
+            await fetchArrivalData(for: stop.parentStop)
+        } else {
+            for (_, children) in stop.groupedStopMetadata {
+                
+                // TODO: One of the big issues with this design is the fact that many of the children might share the same NSR:StopPlace:ID and therefore would make multiple calls for the exact same dataset. Therefore this must be redesigned such that the fetchArrivalData func receives a Set of NSR strings based upon the children NSR strings. Where should the set of NSR strings be created  . .. .. ...........   ????????????????????????
+                
+                for child in children {
+                    await fetchArrivalData(for: child, in: stop.parentStop)
+                }
+            }
+        }
+    }
+    
+    
     // Called when StopSearchResult.hasChildrenIds == false
     func fetchArrivalData(for parent: GeocoderStop) async {
         do {
@@ -91,7 +107,10 @@ final class FavoriteStopViewModel {
                 guard let match = allChildren.first(where: {
                     arrival.finalDestination == $0.finalDestination &&
                     arrival.publicTransportNumber == $0.publicTransportNumber
-                }) else { continue }
+                })
+                else {
+                    continue // TODO: Although highly improbable, child might not exist, which should be communicated
+                }
                 
                 arrivalData[match, default: []].append(arrival)
             }
@@ -109,7 +128,7 @@ final class FavoriteStopViewModel {
         }
     }
     
-    func fetchArrivalData(for child: StopSearchResult.StopMetadata) async {
+    func fetchArrivalData(for child: StopSearchResult.StopMetadata, in parent: GeocoderStop) async {
         do {
             /*isLoading = true TODO: Create isLoading array for each individual item that can be loaded.
              
@@ -118,32 +137,25 @@ final class FavoriteStopViewModel {
              }*/
             
             let arrivals = try await journeyPlannerService.fetchLiveArrivalData(stopPlaceID: child.id)
-            arrivalData[child, default: []].append(contentsOf: arrivals)
             
-        } catch EndpointError.networkError(let URLError) {
-            // TODO: Handle this
-        } catch EndpointError.httpError(let statusCode) {
-            // TODO: Handle this
-        } catch EndpointError.decodingError {
-            // TODO: Handle this
-        } catch {
-            // TODO: Handle this
-        }
-    }
-    
-    func fetchArrivalData(for children: [StopSearchResult.StopMetadata]) async {
-        do {
-            /*isLoading = true TODO: Create isLoading array for each individual item that can be loaded.
-             
-             defer {
-             isLoading = false
-             }*/
-            for child in children {
-                let arrivals = try await journeyPlannerService.fetchLiveArrivalData(stopPlaceID: child.id)
-                
-                for arrival in arrivals {
-                    print(arrival)
+            guard let parentIdx = index(of: parent) else {
+                print("Could not find parent") // TODO: Handle this xd...
+                return
+            }
+            
+            let allChildren = favoritedStops[parentIdx].groupedStopMetadata.values.flatMap { $0 }
+            
+            // Iterate through arrivals then children first, because the other way around would be more computationally expensive
+            for arrival in arrivals {
+                guard let match = allChildren.first(where: {
+                    arrival.finalDestination == $0.finalDestination &&
+                    arrival.publicTransportNumber == $0.publicTransportNumber
+                })
+                else {
+                    continue // TODO: Although highly improbable, child might not exist, which should be communicated
                 }
+                
+                arrivalData[match, default: []].append(arrival)
             }
             
         } catch EndpointError.networkError(let URLError) {
@@ -156,7 +168,6 @@ final class FavoriteStopViewModel {
             // TODO: Handle this
         }
     }
-    
     
      // UpdateArrivalData, when the amount of arrival data goes down to four for a certain nsr stop place, call fetchArrivalData from the point in time of the last arrival data that we have and get 4 queries!
 }
