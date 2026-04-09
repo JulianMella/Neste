@@ -29,6 +29,8 @@ import Foundation
             
             var stops: [GeocoderStop] = try await geocoderService.autocomplete(query: query)
             
+            // TODO: Separate these calls into different steps as discussed with Entur...............................
+            
             stops = cleanUpData(of: stops)
             
             for stop in stops {
