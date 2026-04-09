@@ -28,11 +28,6 @@ struct FavoriteStopsListView: View {
                             stopIDClicked: $stopIDClicked,
                             proxy: proxy,
                         )
-                        .onAppear {
-                            Task {
-                                await favoriteStopViewModel.fetchArrivalData(for: stop)
-                            }
-                        }
                     }
                 }
             }
