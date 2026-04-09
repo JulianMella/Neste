@@ -39,7 +39,6 @@ struct StopDetail: View {
                         let needsInitialFetch = stopGroup.allSatisfy { !favoriteStopViewModel.hasData(for: $0)}
                         
                         if needsInitialFetch {
-                            print("Needs initial fetch")
                             Task {
                                 await favoriteStopViewModel.loadArrivals(for: stopSearchResult, in: transportTypes[selectedTab])
                             }
@@ -57,7 +56,6 @@ struct StopDetail: View {
                         let needsInitialFetch = stopGroup.allSatisfy { !favoriteStopViewModel.hasData(for: $0)}
                         
                         if needsInitialFetch {
-                            print("Needs initial fetch")
                             Task {
                                 await favoriteStopViewModel.loadArrivals(for: stopSearchResult, in: transportTypes[selectedTab])
                             }
