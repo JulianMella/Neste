@@ -20,12 +20,16 @@ struct StopRow: View {
     
     @Environment(FavoriteStopViewModel.self) private var favoriteStopViewModel
     
+    var parentStop: GeocoderStop {
+        stopSearchResult.parentStop
+    }
+    
     var parentId: String {
-        stopSearchResult.parentStop.id
+        parentStop.id
     }
     
     var parentName: String {
-        stopSearchResult.parentStop.name
+        parentStop.name
     }
     
     var transportTypes: [TransportType] {
@@ -66,8 +70,8 @@ struct StopRow: View {
                     }
                     .contextMenu{
                         if stopRowType == .favoriteStop {
-                            Button("Delete \(stopSearchResult.parentStop.name)") {
-                                favoriteStopViewModel.deleteParent(parent: stopSearchResult.parentStop) //TODO: Better naming
+                            Button("Delete \(parentName)") {
+                                favoriteStopViewModel.deleteParent(parent: parentStop) //TODO: Better naming
                             }
                         }
                     }
