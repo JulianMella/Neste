@@ -141,6 +141,9 @@ final class FavoriteStopViewModel {
     
     // Called when StopSearchResult.hasChildrenIds == false
     // In this case we do not care about transport type since everything shares the same data fetch query:)
+    // well..... this solution turns out to work well for getting data for stopsearchresult where hasChildrenIds == true....
+    // this might be the way to do it no matter what......
+    // TODO: Discuss this with Entur and analyze it further on my own ^
     private func fetchArrivalData(for parent: GeocoderStop) async {
         do {
             /*isLoading = true TODO: Create isLoading array for each individual item that can be loaded.
