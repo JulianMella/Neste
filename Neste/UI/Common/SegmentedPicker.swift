@@ -29,7 +29,7 @@ struct SegmentedPicker: View {
                         }
                     }
                     .font(.headline.weight(.semibold))
-                    .foregroundStyle(selected ? .white : .gray)
+                    .foregroundStyle(selected ? Color.primary : .gray)
                     .animation(.none, value: selection)
                     .frame(maxWidth: .infinity, minHeight: 28)
                     .contentShape(Capsule())
@@ -45,7 +45,7 @@ struct SegmentedPicker: View {
             }
         }
         .padding(2.5)
-        .background(.white.opacity(0.08))
+        .background(Color.primary.opacity(0.08))
         .clipShape(Capsule())
     }
 }

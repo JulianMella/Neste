@@ -58,11 +58,11 @@ struct StopRow: View {
                         Text(parentName)
                             .font(.system(size: 16))
                             .fontWeight(.semibold)
-                            .foregroundStyle(.white)
                         Spacer()
                         ForEach(transportTypes, id: \.self) { transportType in
                             Image(systemName: transportType.sfSymbol)
                                 .frame(width: 24, height: 24)
+                                .foregroundStyle(.white)
                                 .background(transportType.color)
                                 .cornerRadius(6)
                         }
@@ -82,14 +82,14 @@ struct StopRow: View {
                     }
                 }
                 .id(parentId)
-                .background(parentId == hoveredStopID || parentId == stopIDClicked ? .white.opacity(0.08) : .clear)
+                .background(parentId == hoveredStopID || parentId == stopIDClicked ? Color.primary.opacity(0.08) : .clear)
                 .clipShape(UnevenRoundedRectangle(topLeadingRadius: 12, bottomLeadingRadius: bottomRadius, bottomTrailingRadius: bottomRadius, topTrailingRadius: 12))
             }
             .buttonStyle(.plain)
             
             if parentId == stopIDClicked {
                 StopDetail(transportTypes: transportTypes, stopSearchResult: stopSearchResult, stopRowType: stopRowType)
-                    .background(.white.opacity(0.08))
+                    .background(Color.primary.opacity(0.08))
                     .clipShape(UnevenRoundedRectangle(topLeadingRadius: 0, bottomLeadingRadius: 12, bottomTrailingRadius: 12, topTrailingRadius: 0))
             }
         }

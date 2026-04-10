@@ -30,9 +30,9 @@ struct StopSearchBar: View {
             } label: {
                 Image(systemName: "chevron.left")
                 .font(.caption.weight(.bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(Color.primary)
                 .frame(width: 32, height: 32)
-                .background(.white.opacity(0.08))
+                .background(Color.primary.opacity(0.08))
                 .clipShape(Circle())
             }
             .buttonStyle(.plain)
@@ -48,7 +48,7 @@ struct StopSearchBar: View {
             .frame(maxWidth: .infinity, minHeight: 28)
             .padding(.horizontal, 12)
             .padding(.vertical, 2.5)
-            .background(.white.opacity(0.08))
+            .background(Color.primary.opacity(0.08))
             .clipShape(Capsule())
             .contentShape(Capsule())
             .onTapGesture {

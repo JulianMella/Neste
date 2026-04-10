@@ -112,6 +112,7 @@ struct StopLineRow: View {
             Text(stop.publicTransportNumber)
                 .frame(width: 24, height: 24)
                 // .padding(.horizontal, stop.publicTransportNumber.count > 1 ? 6 : 8) // TODO: Not satisfied with this result.
+                .foregroundStyle(.white)
                 .background(stop.transportType.color)
                 .cornerRadius(6)
             
