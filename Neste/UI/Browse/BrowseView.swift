@@ -17,9 +17,9 @@ struct BrowseView: View {
                 SegmentedPicker(
                     selection: $selectedTab,
                     items: [
-                        ("Favorites", "star"),
-                        ("Near you", "location"),
-                        ("Plan route", "point.topleft.down.to.point.bottomright.filled.curvepath")
+                        ("Stops", "tram.fill"),
+                        ("Routes", "point.topleft.down.to.point.bottomright.filled.curvepath"),
+                        ("Explore", "location")
                     ]
                 )
 
