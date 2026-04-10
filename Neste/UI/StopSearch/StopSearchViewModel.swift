@@ -8,7 +8,8 @@
 import Observation
 import Foundation
 
-@Observable class StopSearchViewModel {
+@Observable
+final class StopSearchViewModel {
     var searchResults: [StopSearchResult] = []
     var isLoading: Bool = false
     var errorMessage: String = ""
@@ -29,32 +30,46 @@ import Foundation
             
             var stops: [GeocoderStop] = try await geocoderService.autocomplete(query: query)
             
-            // TODO: Separate these calls into different steps as discussed with Entur...............................
-            
             stops = cleanUpData(of: stops)
             
             for stop in stops {
-                let children = try await stopPlaceService.fetchChildren(parentID: stop.id)
-                let hasChildrenIds = !children.isEmpty
-                let stopIDs = hasChildrenIds ? children.map{$0.id} : [stop.id]
-
-                var stopMetadata = try await fetchStopMetadata(for: stopIDs)
-
-                stopMetadata = sortMetadata(stopMetadata)
-                
-                let groupedMetadata: [TransportType: [StopSearchResult.StopMetadata]] = groupMetadata(stopMetadata)
-                
                 queryResults.append(
                     StopSearchResult(
                         parentStop: stop,
-                        hasChildrenIds: hasChildrenIds,
-                        groupedStopMetadata: groupedMetadata
+                        hasChildrenIds: false,
+                        groupedStopMetadata: Dictionary(uniqueKeysWithValues: stop.transportTypes.map {($0, [])})
                     )
                 )
             }
 
             searchResults = queryResults
 
+        } catch EndpointError.networkError(let URLError) {
+            // TODO: Handle this
+        } catch EndpointError.httpError(let statusCode) {
+            // TODO: Handle this
+        } catch EndpointError.decodingError {
+            // TODO: Handle this
+        } catch {
+            // TODO: Handle this
+        }
+    }
+    
+    func loadStopMetadata(for parent: GeocoderStop, in transportType: TransportType) async {
+        guard let searchResultIdx = searchResults.firstIndex(where: { $0.parentStop == parent })
+        else {
+            return
+        }
+        do {
+            let children = try await stopPlaceService.fetchChildren(parentID: parent.id)
+            let hasChildrenIds = !children.isEmpty
+            let stopIDs = hasChildrenIds ? children.map{$0.id} : [parent.id]
+
+            var stopMetadata = try await fetchStopMetadata(for: stopIDs)
+
+            stopMetadata = sortMetadata(stopMetadata)
+            
+            searchResults[searchResultIdx].groupedStopMetadata = groupMetadata(stopMetadata)
         } catch EndpointError.networkError(let URLError) {
             // TODO: Handle this
         } catch EndpointError.httpError(let statusCode) {

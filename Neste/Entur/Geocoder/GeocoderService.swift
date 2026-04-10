@@ -44,7 +44,7 @@ struct GeocoderService {
                 id: call.properties.id,
                 name: call.properties.name,
                 county: call.properties.county,
-                transportTypes: Array(transportTypeSet)
+                transportTypes: Array(transportTypeSet) // The set is converted back to an array such that we can apply ordering logic to it.
             )
         }
     }

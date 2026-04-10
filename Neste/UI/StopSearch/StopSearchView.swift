@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct StopSearchView: View {
-    @State private var stopSearchViewModel = StopSearchViewModel()
+    @Environment(StopSearchViewModel.self) private var stopSearchViewModel
     @FocusState var isSearchFocused: Bool
     @Binding var showStopSearch: Bool
     
     var body: some View {
         VStack(spacing: 0) {
-            StopSearchBar(stopSearchViewModel: $stopSearchViewModel, isSearchFocused: $isSearchFocused, showStopSearch: $showStopSearch)
+            StopSearchBar(isSearchFocused: $isSearchFocused, showStopSearch: $showStopSearch)
             
             if (!stopSearchViewModel.isLoading && stopSearchViewModel.searchResults.isEmpty) {
                 EmptyView()
