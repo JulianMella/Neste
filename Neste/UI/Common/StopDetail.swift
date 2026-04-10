@@ -47,6 +47,8 @@ struct StopDetail: View {
                         if needsInitialFetch {
                             Task {
                                 await favoriteStopViewModel.loadArrivals(for: stopSearchResult, in: transportTypes[selectedTab])
+                                
+                                favoriteStopViewModel.formatDepartures(for: stopGroup)
                             }
                         } else {
                             refreshData(for: stopGroup)
