@@ -36,6 +36,7 @@ struct StopSearchBar: View {
                 .clipShape(Circle())
             }
             .buttonStyle(.plain)
+            .focusEffectDisabled()
             
             TextField(
                 "􀊫 Search for your favorite stops",
