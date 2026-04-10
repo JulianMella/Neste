@@ -139,15 +139,17 @@ struct StopLineRow: View {
             }
             
             else if stopRowType == .favoriteStop {
-                if let arrivals = favoriteStopViewModel.arrivalData[stop], arrivals.count > 1 {
+                if let arrivals = favoriteStopViewModel.arrivalData[stop], !arrivals.isEmpty {
                     Text(arrivals[0].aimedDepartureTimeString)
                     .font(.system(size: 16))
                     
-                    HStack {
-                        ForEach(1..<(arrivals.count < 4 ? arrivals.count : 4), id: \.self) { i in
-                            Text(arrivals[i].aimedDepartureTimeString)
-                                .foregroundStyle(.gray)
-                                .frame(width: 45, alignment: .trailing)
+                    if arrivals.count > 1 {
+                        HStack {
+                            ForEach(1..<(arrivals.count < 4 ? arrivals.count : 4), id: \.self) { i in
+                                Text(arrivals[i].aimedDepartureTimeString)
+                                    .foregroundStyle(.gray)
+                                    .frame(width: 45, alignment: .trailing)
+                            }
                         }
                     }
                 }
