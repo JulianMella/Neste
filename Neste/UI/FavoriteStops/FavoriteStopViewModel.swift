@@ -45,6 +45,8 @@ final class FavoriteStopViewModel {
         if let parentIndex = index(of: parent) {
             favoritedStops[parentIndex].groupedStopMetadata[child.transportType, default: []].append(child)
             
+            favoritedStops[parentIndex].groupedStopMetadata[child.transportType]?.sort { $0.publicTransportNumber.localizedStandardCompare($1.publicTransportNumber) == .orderedAscending }
+            
             if hasChildrenIds {
                 favoritedStops[parentIndex].uniqueNsrStrings[child.transportType, default: []].insert(child.id)
             }
