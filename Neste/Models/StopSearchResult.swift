@@ -7,7 +7,7 @@
 
 struct StopSearchResult: Codable {
     let parentStop: GeocoderStop
-    let hasChildrenIds: Bool
+    var hasChildrenIds: Bool
     var groupedStopMetadata: [TransportType : [StopMetadata]]
     var uniqueNsrStrings: [TransportType: Set<String>] = [:]
     

@@ -70,6 +70,7 @@ final class StopSearchViewModel {
             stopMetadata = sortMetadata(stopMetadata)
             
             searchResults[searchResultIdx].groupedStopMetadata = groupMetadata(stopMetadata)
+            searchResults[searchResultIdx].hasChildrenIds = hasChildrenIds
         } catch EndpointError.networkError(let URLError) {
             // TODO: Handle this
         } catch EndpointError.httpError(let statusCode) {

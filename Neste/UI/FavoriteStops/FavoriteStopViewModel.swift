@@ -149,7 +149,7 @@ final class FavoriteStopViewModel {
              isLoading = false
              }*/
             let arrivals = try await journeyPlannerService.fetchLiveArrivalData(stopPlaceID: parent.id)
-            print("HERE)?")
+
             guard let parentIdx = index(of: parent) else {
                 print("Could not find parent")
                 return
@@ -190,8 +190,6 @@ final class FavoriteStopViewModel {
              defer {
              isLoading = false
              }*/
-            
-            print("HERE")
             
             guard let nsrStrings = stop.uniqueNsrStrings[transportType],
                   let children = stop.groupedStopMetadata[transportType]
