@@ -11,7 +11,7 @@ struct StopPlaceEndpoint: RESTEndpoint {
     var baseUrl: String
 }
 
-final class StopPlaceService {
+struct StopPlaceService {
     let stopPlaceEndpoint = StopPlaceEndpoint(baseUrl: "https://api.entur.io/stop-places/v1/read/stop-places/") // TODO: Convert this to URLComponents
     
     func fetchChildren(parentID: String) async throws -> [StopPlaceResponse] {
