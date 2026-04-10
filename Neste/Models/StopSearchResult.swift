@@ -5,13 +5,13 @@
 //  Created by Julian on 05/04/2026.
 //
 
-struct StopSearchResult {
+struct StopSearchResult: Codable {
     let parentStop: GeocoderStop
-    let hasChildrenIds: Bool
+    var hasChildrenIds: Bool
     var groupedStopMetadata: [TransportType : [StopMetadata]]
     var uniqueNsrStrings: [TransportType: Set<String>] = [:]
     
-    struct StopMetadata: Hashable {
+    struct StopMetadata: Hashable, Codable {
         let id: String
         let transportType: TransportType
         let finalDestination: String

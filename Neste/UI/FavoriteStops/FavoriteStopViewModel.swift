@@ -10,7 +10,22 @@ import Observation
 
 @Observable
 final class FavoriteStopViewModel {
-    var favoritedStops: [FavoriteStop] = [] // TODO: Persistent consider init for just this case, everything else is just stored in memory!
+    var favoritedStops: [FavoriteStop] = [] {
+        didSet { save() }
+    }
+    
+    init() {
+        if let data = UserDefaults.standard.data(forKey: "favoritedStops"),
+           let decoded = try? JSONDecoder().decode([FavoriteStop].self, from: data) {
+                favoritedStops = decoded
+        }
+    }
+
+    private func save() {
+        if let data = try? JSONEncoder().encode(favoritedStops) {
+            UserDefaults.standard.set(data, forKey: "favoritedStops")
+        }
+    }
     
     var arrivalData: [FavoriteStopChild : [JourneyPlannerArrivalData]] = [:]
     
@@ -126,6 +141,9 @@ final class FavoriteStopViewModel {
     
     // Called when StopSearchResult.hasChildrenIds == false
     // In this case we do not care about transport type since everything shares the same data fetch query:)
+    // well..... this solution turns out to work well for getting data for stopsearchresult where hasChildrenIds == true....
+    // this might be the way to do it no matter what......
+    // TODO: Discuss this with Entur and analyze it further on my own ^
     private func fetchArrivalData(for parent: GeocoderStop) async {
         do {
             /*isLoading = true TODO: Create isLoading array for each individual item that can be loaded.
@@ -134,7 +152,7 @@ final class FavoriteStopViewModel {
              isLoading = false
              }*/
             let arrivals = try await journeyPlannerService.fetchLiveArrivalData(stopPlaceID: parent.id)
-            print("HERE)?")
+
             guard let parentIdx = index(of: parent) else {
                 print("Could not find parent")
                 return
@@ -175,8 +193,6 @@ final class FavoriteStopViewModel {
              defer {
              isLoading = false
              }*/
-            
-            print("HERE")
             
             guard let nsrStrings = stop.uniqueNsrStrings[transportType],
                   let children = stop.groupedStopMetadata[transportType]
