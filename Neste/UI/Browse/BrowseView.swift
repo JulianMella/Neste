@@ -29,9 +29,9 @@ struct BrowseView: View {
                     } label: {
                         Image(systemName: "plus")
                             .font(.caption.weight(.bold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Color.primary)
                             .frame(width: 32, height: 32)
-                            .background(Circle().fill(.white.opacity(0.08)))
+                            .background(Circle().fill(Color.primary.opacity(0.08)))
                     }
                     .buttonStyle(.plain)
                 }
