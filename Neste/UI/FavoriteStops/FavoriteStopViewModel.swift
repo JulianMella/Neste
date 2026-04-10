@@ -113,7 +113,6 @@ final class FavoriteStopViewModel {
     }
     
     private func formatDeparture(for departure: Date) -> String {
-        let now = Date()
         let minutes = departure.timeIntervalSinceNow / 60
         
         if minutes <= 1.5 {
