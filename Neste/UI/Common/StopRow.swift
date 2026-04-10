@@ -33,7 +33,12 @@ struct StopRow: View {
     }
     
     var transportTypes: [TransportType] {
-        stopSearchResult.parentStop.transportTypes
+        switch stopRowType {
+        case .stopSearch:
+            stopSearchResult.parentStop.transportTypes
+        case .favoriteStop:
+            Array(stopSearchResult.groupedStopMetadata.keys).sorted(by: { $0.sortOrder < $1.sortOrder })
+        }
     }
     
     private var bottomRadius: CGFloat {
