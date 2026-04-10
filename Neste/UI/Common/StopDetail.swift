@@ -9,6 +9,7 @@ import SwiftUI
 
 struct StopDetail: View {
     @Environment(FavoriteStopViewModel.self) private var favoriteStopViewModel
+    @Environment(StopSearchViewModel.self) private var stopSearchViewModel
     let transportTypes: [TransportType]
     let stopSearchResult: StopSearchResult
     let stopRowType: StopRowType
@@ -32,49 +33,21 @@ struct StopDetail: View {
             
             if let stopGroup = stopSearchResult.groupedStopMetadata[transportTypes[selectedTab]] {
                 Group {
-                    ForEach(stopGroup, id: \.self) { child in
-                        StopLineRow(stop: child, hasChildrenIds: stopSearchResult.hasChildrenIds, parent: stopSearchResult.parentStop, stopRowType: stopRowType)
+                    // TODO: Add stopGroup.isEmpty, but is loading case for StopSearch
+                    if stopGroup.isEmpty {
+                        Text("No transportation found at this stop")
+                            .frame(maxWidth: .infinity)
+                    } else {
+                        ForEach(stopGroup, id: \.self) { child in
+                            StopLineRow(stop: child, hasChildrenIds: stopSearchResult.hasChildrenIds, parent: stopSearchResult.parentStop, stopRowType: stopRowType)
+                        }
                     }
                 }
                 .onAppear {
-                    if stopRowType == .favoriteStop {
-                        
-                        // There could be a super obscure edge case where every marked stop has empty data, like actually, and it would continue firing off
-                        // needsInitialFetch = true.. i need the second TODO safeguard for this as well..........
-                        let needsInitialFetch = stopGroup.allSatisfy { !favoriteStopViewModel.hasData(for: $0)}
-                        // TODO: Add an isLoading check such that these calls are not perma spammed if needsInitialFetch is already sending pakcets and expecting somethign.
-                        // TODO: This would also mean that I would need a boolean for each of them saying "I already fetched, but found no data"
-                        if needsInitialFetch {
-                            Task {
-                                await favoriteStopViewModel.loadArrivals(for: stopSearchResult, in: transportTypes[selectedTab])
-                                
-                                favoriteStopViewModel.formatDepartures(for: stopGroup)
-                            }
-                        } else {
-                            refreshData(for: stopGroup)
-                        }
-                    }
-                    
-                    else if stopRowType == .stopSearch {
-                        // TODO: load data for this specific tab
-                    }
+                    loadData(for: stopGroup)
                 }
                 .onChange(of: selectedTab) {
-                    if stopRowType == .favoriteStop {
-                        let needsInitialFetch = stopGroup.allSatisfy { !favoriteStopViewModel.hasData(for: $0)}
-                        
-                        if needsInitialFetch {
-                            Task {
-                                await favoriteStopViewModel.loadArrivals(for: stopSearchResult, in: transportTypes[selectedTab])
-                            }
-                        } else {
-                            refreshData(for: stopGroup)
-                        }
-                    }
-                    
-                    else if stopRowType == .stopSearch {
-                        // TODO: load data for this specific tab
-                    }
+                    loadData(for: stopGroup)
                 }
                 .onDisappear {
                     if stopRowType == .favoriteStop {
@@ -82,13 +55,36 @@ struct StopDetail: View {
                         displayTimer = nil
                     }
                 }
-            } else {
-                Text("No transportation found at this stop")
-                    .frame(maxWidth: .infinity)
             }
-            
         }
         .padding(10)
+    }
+    
+    private func loadData(for stopGroup: [StopSearchResult.StopMetadata]) {
+        if stopRowType == .favoriteStop {
+            // There could be a super obscure edge case where every marked stop has empty data, like actually, and it would continue firing off
+            // needsInitialFetch = true.. i need the second TODO safeguard for this as well..........
+            let needsInitialFetch = stopGroup.allSatisfy { !favoriteStopViewModel.hasData(for: $0)}
+            // TODO: Add an isLoading check such that these calls are not perma spammed if needsInitialFetch is already sending pakcets and expecting somethign.
+            // TODO: This would also mean that I would need a boolean for each of them saying "I already fetched, but found no data"
+            
+            if needsInitialFetch {
+                Task {
+                    await favoriteStopViewModel.loadArrivals(for: stopSearchResult, in: transportTypes[selectedTab])
+                    refreshData(for: stopGroup)
+                }
+            } else {
+                refreshData(for: stopGroup)
+            }
+        }
+        
+        else if stopRowType == .stopSearch {
+            if  stopGroup.isEmpty {
+                Task {
+                    await stopSearchViewModel.loadStopMetadata(for: stopSearchResult.parentStop, in: transportTypes[selectedTab])
+                }
+            }
+        }
     }
     
     private func refreshData(for stopGroup: [StopSearchResult.StopMetadata]) {
