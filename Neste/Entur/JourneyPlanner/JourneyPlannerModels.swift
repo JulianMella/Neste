@@ -14,14 +14,13 @@ struct JourneyPlannerStopMetadata: Hashable {
     var transportType: TransportType
 }
 
-struct JourneyPlannerArrivalData: Hashable, CustomStringConvertible {
+struct JourneyPlannerArrivalData: Hashable {
     var publicTransportNumber: String
     var finalDestination: String
     var aimedDepartureTime: Date
     var expectedDepartureTime: Date
-    var description: String {
-        return "public code - \(publicTransportNumber) \n front text - \(finalDestination) \n aimed departure time - \(aimedDepartureTime) \n expected departure time - \(expectedDepartureTime)"
-    }
+    var aimedDepartureTimeString: String = ""
+    var expectedDepartureTimeString: String = ""
 }
 
 struct GraphQLData<T: Decodable>: Decodable {

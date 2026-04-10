@@ -5,55 +5,26 @@
 //  Created by Julian on 06/04/2026.
 //
 
+import Foundation
 import Observation
 
 @Observable
 final class FavoriteStopViewModel {
     var favoritedStops: [FavoriteStop] = [] // TODO: Persistent consider init for just this case, everything else is just stored in memory!
+    
     var arrivalData: [FavoriteStopChild : [JourneyPlannerArrivalData]] = [:]
+    
     private let journeyPlannerService = JourneyPlannerService()
+    
     var hasData: Bool {
         !favoritedStops.isEmpty
     }
     
-    private func index(of parent: GeocoderStop) -> Int? {
-        favoritedStops.firstIndex(where: { $0.parentStop == parent })
-    }
-    
-    private func keyAndIndex(of child: StopSearchResult.StopMetadata, in parentIndex: Int) -> KeyIndex? {
-        for (type, metadata) in favoritedStops[parentIndex].groupedStopMetadata {
-            if let index = metadata.firstIndex(where: { $0 == child }) {
-                return KeyIndex(key: type, index: index)
-            }
-        }
-        
-        return nil
-    }
-    
-    // Bit of a verbose function name. Essentially, this function finds the key and index for a specific child and confirms
-    // whether or not it is the only child holding that key.
-    private func keyIndexAndIsUniqueNsr(of child: StopSearchResult.StopMetadata, in parentIndex: Int) -> KeyIndexUniqueNSR? {
-        var tType: TransportType? = nil
-        var childIndex: Int? = nil
-        var isUniqueNsr: Bool = true
-        
-        for (type, metadata) in favoritedStops[parentIndex].groupedStopMetadata {
-            for i in 0..<metadata.count {
-                if metadata[i] == child {
-                    tType = type
-                    childIndex = i
-                }
-                
-                if metadata[i] != child && metadata[i].id == child.id {
-                    isUniqueNsr = false
-                }
-            }
-        }
-        
-        guard let tType = tType, let childIndex = childIndex else { return nil }
-        
-        return KeyIndexUniqueNSR(keyIndex: KeyIndex(key: tType, index: childIndex), isUniqueNsr: isUniqueNsr)
-    }
+    let formatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "HH:mm"
+        return f
+    }()
     
     func addFavorite(parent: GeocoderStop, hasChildrenIds: Bool, child: StopSearchResult.StopMetadata) {
         if let parentIndex = index(of: parent) {
@@ -115,6 +86,40 @@ final class FavoriteStopViewModel {
         }
     }
     
+    func hasData(for child: StopSearchResult.StopMetadata) -> Bool {
+        guard let value = arrivalData[child] else { return false }
+        
+        return !value.isEmpty
+    }
+    
+    func cleanUpData(for stopGroup: [StopSearchResult.StopMetadata]) {
+        for stop in stopGroup {
+            arrivalData[stop] = arrivalData[stop]?.filter { $0.aimedDepartureTime.timeIntervalSinceNow > 0 }
+        }
+        
+        // Refetch if needed here.......
+        
+        for stop in stopGroup {
+            guard arrivalData[stop] != nil else { continue }
+                
+            for i in 0..<arrivalData[stop]!.count {
+                arrivalData[stop]![i].aimedDepartureTimeString = formatDeparture(for: arrivalData[stop]![i].aimedDepartureTime)
+            }
+        }
+    }
+    
+    private func formatDeparture(for departure: Date) -> String {
+        let now = Date()
+        let minutes = departure.timeIntervalSinceNow / 60
+        
+        if minutes <= 1.5 {
+            return "Now"
+        } else if minutes <= 15 {
+            return "\(Int(minutes)) min"
+        } else {
+            return formatter.string(from: departure)
+        }
+    }
     
     // Called when StopSearchResult.hasChildrenIds == false
     // In this case we do not care about transport type since everything shares the same data fetch query:)
@@ -199,6 +204,45 @@ final class FavoriteStopViewModel {
     }
     
      // UpdateArrivalData, when the amount of arrival data goes down to four for a certain nsr stop place, call fetchArrivalData from the point in time of the last arrival data that we have and get 4 queries!
+    
+    private func index(of parent: GeocoderStop) -> Int? {
+        favoritedStops.firstIndex(where: { $0.parentStop == parent })
+    }
+    
+    private func keyAndIndex(of child: StopSearchResult.StopMetadata, in parentIndex: Int) -> KeyIndex? {
+        for (type, metadata) in favoritedStops[parentIndex].groupedStopMetadata {
+            if let index = metadata.firstIndex(where: { $0 == child }) {
+                return KeyIndex(key: type, index: index)
+            }
+        }
+        
+        return nil
+    }
+    
+    // Bit of a verbose function name. Essentially, this function finds the key and index for a specific child and confirms
+    // whether or not it is the only child holding that key.
+    private func keyIndexAndIsUniqueNsr(of child: StopSearchResult.StopMetadata, in parentIndex: Int) -> KeyIndexUniqueNSR? {
+        var tType: TransportType? = nil
+        var childIndex: Int? = nil
+        var isUniqueNsr: Bool = true
+        
+        for (type, metadata) in favoritedStops[parentIndex].groupedStopMetadata {
+            for i in 0..<metadata.count {
+                if metadata[i] == child {
+                    tType = type
+                    childIndex = i
+                }
+                
+                if metadata[i] != child && metadata[i].id == child.id {
+                    isUniqueNsr = false
+                }
+            }
+        }
+        
+        guard let tType = tType, let childIndex = childIndex else { return nil }
+        
+        return KeyIndexUniqueNSR(keyIndex: KeyIndex(key: tType, index: childIndex), isUniqueNsr: isUniqueNsr)
+    }
 }
 
 struct KeyIndex {
