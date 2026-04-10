@@ -13,6 +13,8 @@ struct StopDetail: View {
     let stopSearchResult: StopSearchResult
     let stopRowType: StopRowType
     @State private var selectedTab = 0
+    @State private var now = Date.now
+    @State private var displayTimer: Timer?
     
     var pickerItems: [(String, String?)] {
         transportTypes.map{($0.pickerText, nil)}
@@ -36,14 +38,18 @@ struct StopDetail: View {
                 }
                 .onAppear {
                     if stopRowType == .favoriteStop {
-                        let needsInitialFetch = stopGroup.allSatisfy { !favoriteStopViewModel.hasData(for: $0)}
                         
+                        // There could be a super obscure edge case where every marked stop has empty data, like actually, and it would continue firing off
+                        // needsInitialFetch = true.. i need the second TODO safeguard for this as well..........
+                        let needsInitialFetch = stopGroup.allSatisfy { !favoriteStopViewModel.hasData(for: $0)}
+                        // TODO: Add an isLoading check such that these calls are not perma spammed if needsInitialFetch is already sending pakcets and expecting somethign.
+                        // TODO: This would also mean that I would need a boolean for each of them saying "I already fetched, but found no data"
                         if needsInitialFetch {
                             Task {
                                 await favoriteStopViewModel.loadArrivals(for: stopSearchResult, in: transportTypes[selectedTab])
                             }
                         } else {
-                            favoriteStopViewModel.deleteStaleData(for: stopGroup)
+                            refreshData(for: stopGroup)
                         }
                     }
                     
@@ -60,12 +66,18 @@ struct StopDetail: View {
                                 await favoriteStopViewModel.loadArrivals(for: stopSearchResult, in: transportTypes[selectedTab])
                             }
                         } else {
-                            favoriteStopViewModel.deleteStaleData(for: stopGroup)
+                            refreshData(for: stopGroup)
                         }
                     }
                     
                     else if stopRowType == .stopSearch {
                         // TODO: load data for this specific tab
+                    }
+                }
+                .onDisappear {
+                    if stopRowType == .favoriteStop {
+                        displayTimer?.invalidate()
+                        displayTimer = nil
                     }
                 }
             } else {
@@ -76,6 +88,15 @@ struct StopDetail: View {
         }
         .padding(10)
     }
+    
+    private func refreshData(for stopGroup: [StopSearchResult.StopMetadata]) {
+        favoriteStopViewModel.cleanUpData(for: stopGroup)
+        
+        displayTimer?.invalidate()
+        displayTimer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true) { _ in
+            favoriteStopViewModel.cleanUpData(for: stopGroup)
+        }
+    }
 }
 
 struct StopLineRow: View {
@@ -85,13 +106,8 @@ struct StopLineRow: View {
     let parent: GeocoderStop
     let stopRowType: StopRowType
     var isFavorited: Bool { favoriteStopViewModel.contains(child: stop, in: parent) }
-    let formatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "HH:mm"
-        return f
-    }()
     
-    // TODO: Set up timer for each row respective to the amount of time left before the next item that is not prune data must update its text string
+    // TODO: take in isLoading if stopRowType is .favoriteStop, to display that data is loading .......... 
     
     var body: some View {
         HStack {
@@ -122,12 +138,12 @@ struct StopLineRow: View {
             
             else if stopRowType == .favoriteStop {
                 if let arrivals = favoriteStopViewModel.arrivalData[stop], arrivals.count > 1 {
-                    Text(formatter.string(from: arrivals[0].aimedDepartureTime))
+                    Text(arrivals[0].aimedDepartureTimeString)
                     .font(.system(size: 16))
                     
                     HStack {
                         ForEach(1..<(arrivals.count < 4 ? arrivals.count : 4), id: \.self) { i in
-                            Text(formatter.string(from: arrivals[i].aimedDepartureTime))
+                            Text(arrivals[i].aimedDepartureTimeString)
                                 .foregroundStyle(.gray)
                                 .frame(width: 45, alignment: .trailing)
                         }
