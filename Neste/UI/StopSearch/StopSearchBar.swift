@@ -10,7 +10,7 @@ import SwiftUI
 // TODO: Make search bar generalized for RouteSearch, make magnifying glass permanent, consider x button on write, search button unclickable and grey until person writes something, consider instant focus on enter view
 
 struct StopSearchBar: View {
-    @Binding var stopSearchViewModel: StopSearchViewModel
+    @Environment(StopSearchViewModel.self) private var stopSearchViewModel
     @FocusState.Binding var isSearchFocused: Bool
     @Binding var showStopSearch: Bool
     
