@@ -10,7 +10,22 @@ import Observation
 
 @Observable
 final class FavoriteStopViewModel {
-    var favoritedStops: [FavoriteStop] = [] // TODO: Persistent consider init for just this case, everything else is just stored in memory!
+    var favoritedStops: [FavoriteStop] = [] {
+        didSet { save() }
+    }
+    
+    init() {
+        if let data = UserDefaults.standard.data(forKey: "favoritedStops"),
+           let decoded = try? JSONDecoder().decode([FavoriteStop].self, from: data) {
+                favoritedStops = decoded
+        }
+    }
+
+    private func save() {
+        if let data = try? JSONEncoder().encode(favoritedStops) {
+            UserDefaults.standard.set(data, forKey: "favoritedStops")
+        }
+    }
     
     var arrivalData: [FavoriteStopChild : [JourneyPlannerArrivalData]] = [:]
     

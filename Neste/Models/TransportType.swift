@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum TransportType {
+enum TransportType: Codable {
     case bus, tram, metro // TODO: Add boat, train, green bus
     
     init?(_ string: String, queryType: QueryType) {

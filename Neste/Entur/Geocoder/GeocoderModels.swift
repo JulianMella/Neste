@@ -27,7 +27,7 @@ struct GeocoderProperties: Decodable {
     var category: [String]
 }
 
-struct GeocoderStop: Hashable {
+struct GeocoderStop: Hashable, Codable {
     var id: String
     var name: String
     var county: String
