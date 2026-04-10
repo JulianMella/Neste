@@ -5,16 +5,26 @@
 //  Created by Julian on 06/04/2026.
 //
 
+import Foundation
 import Observation
 
 @Observable
 final class FavoriteStopViewModel {
     var favoritedStops: [FavoriteStop] = [] // TODO: Persistent consider init for just this case, everything else is just stored in memory!
+    
     var arrivalData: [FavoriteStopChild : [JourneyPlannerArrivalData]] = [:]
+    
     private let journeyPlannerService = JourneyPlannerService()
+    
     var hasData: Bool {
         !favoritedStops.isEmpty
     }
+    
+    let formatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "HH:mm"
+        return f
+    }()
     
     func addFavorite(parent: GeocoderStop, hasChildrenIds: Bool, child: StopSearchResult.StopMetadata) {
         if let parentIndex = index(of: parent) {
@@ -76,14 +86,39 @@ final class FavoriteStopViewModel {
         }
     }
     
-    func deleteStaleData(for stopGroup: [StopSearchResult.StopMetadata]) {
-        
-    }
-    
     func hasData(for child: StopSearchResult.StopMetadata) -> Bool {
         guard let value = arrivalData[child] else { return false }
         
         return !value.isEmpty
+    }
+    
+    func cleanUpData(for stopGroup: [StopSearchResult.StopMetadata]) {
+        for stop in stopGroup {
+            arrivalData[stop] = arrivalData[stop]?.filter { $0.aimedDepartureTime.timeIntervalSinceNow > 0 }
+        }
+        
+        // Refetch if needed here.......
+        
+        for stop in stopGroup {
+            guard arrivalData[stop] != nil else { continue }
+                
+            for i in 0..<arrivalData[stop]!.count {
+                arrivalData[stop]![i].aimedDepartureTimeString = formatDeparture(for: arrivalData[stop]![i].aimedDepartureTime)
+            }
+        }
+    }
+    
+    private func formatDeparture(for departure: Date) -> String {
+        let now = Date()
+        let minutes = departure.timeIntervalSinceNow / 60
+        
+        if minutes <= 1.5 {
+            return "Now"
+        } else if minutes <= 15 {
+            return "\(Int(minutes)) min"
+        } else {
+            return formatter.string(from: departure)
+        }
     }
     
     // Called when StopSearchResult.hasChildrenIds == false
