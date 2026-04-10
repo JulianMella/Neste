@@ -60,7 +60,7 @@ final class FavoriteStopViewModel {
         }
     }
     
-    func deleteParent(parent: GeocoderStop) {
+    func deleteParent(_ parent: GeocoderStop) {
         if let parentIndex = index(of: parent) {
             favoritedStops.remove(at: parentIndex)
         }
